@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **BACK-01**: Backend accepts HTTP POST /transcription with deviceId and text
 - [ ] **BACK-02**: Backend maintains WebSocket server for agent connections
-- [ ] **BACK-03**: Backend maintains connection registry (deviceId → WebSocket mapping)
+- [ ] **BACK-03**: Backend maintains connection registry (deviceId -> WebSocket mapping)
 - [ ] **BACK-04**: Backend routes transcriptions to correct agent via WebSocket
 - [ ] **BACK-05**: Backend provides GET /devices API listing connected agents
 - [ ] **BACK-06**: Backend handles agent registration on WebSocket connect
@@ -63,8 +63,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **RES-01**: Mobile app queues transcriptions locally when offline
 - [ ] **RES-02**: Mobile app replays queued transcriptions on reconnect
-- [ ] **RES-03**: Mobile app implements exponential backoff reconnection (1s → 30s max)
-- [ ] **RES-04**: Desktop agent implements exponential backoff reconnection (1s → 30s max)
+- [ ] **RES-03**: Mobile app implements exponential backoff reconnection (1s -> 30s max)
+- [ ] **RES-04**: Desktop agent implements exponential backoff reconnection (1s -> 30s max)
 - [ ] **RES-05**: Desktop agent responds to heartbeat ping with pong
 - [ ] **RES-06**: Desktop agent detects missed pongs and reconnects
 - [ ] **RES-07**: Backend implements message acknowledgment protocol
@@ -135,13 +135,62 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | | |
+| BACK-01 | Phase 1 | Pending |
+| BACK-02 | Phase 1 | Pending |
+| BACK-03 | Phase 1 | Pending |
+| BACK-04 | Phase 1 | Pending |
+| BACK-05 | Phase 1 | Pending |
+| BACK-06 | Phase 1 | Pending |
+| BACK-07 | Phase 1 | Pending |
+| BACK-08 | Phase 1 | Pending |
+| RES-07 | Phase 1 | Pending |
+| WIN-01 | Phase 2 | Pending |
+| WIN-02 | Phase 2 | Pending |
+| WIN-03 | Phase 2 | Pending |
+| WIN-04 | Phase 2 | Pending |
+| WIN-05 | Phase 2 | Pending |
+| WIN-06 | Phase 2 | Pending |
+| WIN-07 | Phase 2 | Pending |
+| WIN-08 | Phase 2 | Pending |
+| RES-04 | Phase 2 | Pending |
+| RES-05 | Phase 2 | Pending |
+| RES-06 | Phase 2 | Pending |
+| DEL-02 | Phase 2 | Pending |
+| DEL-04 | Phase 2 | Pending |
+| DEL-05 | Phase 2 | Pending |
+| VOICE-01 | Phase 3 | Pending |
+| VOICE-02 | Phase 3 | Pending |
+| VOICE-03 | Phase 3 | Pending |
+| VOICE-04 | Phase 3 | Pending |
+| VOICE-05 | Phase 3 | Pending |
+| VOICE-06 | Phase 3 | Pending |
+| VOICE-07 | Phase 3 | Pending |
+| VOICE-08 | Phase 3 | Pending |
+| DEV-01 | Phase 3 | Pending |
+| DEV-02 | Phase 3 | Pending |
+| DEV-03 | Phase 3 | Pending |
+| DEV-04 | Phase 3 | Pending |
+| DEV-05 | Phase 3 | Pending |
+| DEV-06 | Phase 3 | Pending |
+| RES-01 | Phase 3 | Pending |
+| RES-02 | Phase 3 | Pending |
+| RES-03 | Phase 3 | Pending |
+| RES-08 | Phase 3 | Pending |
+| DEL-01 | Phase 3 | Pending |
+| DEL-03 | Phase 3 | Pending |
+| LIN-01 | Phase 4 | Pending |
+| LIN-02 | Phase 4 | Pending |
+| LIN-03 | Phase 4 | Pending |
+| LIN-04 | Phase 4 | Pending |
+| LIN-05 | Phase 4 | Pending |
+| LIN-06 | Phase 4 | Pending |
+| LIN-07 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: (To be counted)
-- Mapped to phases: (To be counted)
-- Unmapped: (To be counted)
+- v1 requirements: 50
+- Mapped to phases: 50
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after initial definition*
+*Last updated: 2026-02-06 after roadmap creation*
