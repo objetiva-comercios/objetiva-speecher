@@ -29,10 +29,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. GET /devices returns list of currently connected agent hostnames
   4. Text sent to /transcription arrives at the correct agent's WebSocket connection
   5. Agent receives ACK from backend confirming message delivery
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md - Project scaffolding, dependencies, and type definitions
+- [ ] 01-02-PLAN.md - Connection registry and message queue services
+- [ ] 01-03-PLAN.md - WebSocket handler with heartbeat and ACK mechanism
+- [ ] 01-04-PLAN.md - HTTP routes for transcription and device listing
+- [ ] 01-05-PLAN.md - Fastify integration and server entry point
 
 ### Phase 2: Windows Desktop Agent
 **Goal**: Windows PC receives text from backend and auto-pastes it at the current cursor position
@@ -85,7 +89,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend Foundation | 0/TBD | Not started | - |
+| 1. Backend Foundation | 0/5 | Planned | - |
 | 2. Windows Desktop Agent | 0/TBD | Not started | - |
 | 3. Mobile App + Voice | 0/TBD | Not started | - |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
