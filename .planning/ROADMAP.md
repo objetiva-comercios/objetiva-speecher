@@ -12,7 +12,7 @@ This roadmap delivers a voice-to-text system where users dictate on Android and 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Backend Foundation** - HTTP/WebSocket server that routes transcriptions to agents
+- [x] **Phase 1: Backend Foundation** - HTTP/WebSocket server that routes transcriptions to agents
 - [ ] **Phase 2: Windows Desktop Agent** - Receives text via WebSocket, auto-pastes at cursor
 - [ ] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
 - [ ] **Phase 4: Linux Desktop Agent** - X11 agent support for Linux workstations
@@ -32,11 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md - Project scaffolding, dependencies, and type definitions
-- [ ] 01-02-PLAN.md - Connection registry and message queue services
-- [ ] 01-03-PLAN.md - WebSocket handler with heartbeat and ACK mechanism
-- [ ] 01-04-PLAN.md - HTTP routes for transcription and device listing
-- [ ] 01-05-PLAN.md - Fastify integration and server entry point
+- [x] 01-01-PLAN.md - Project scaffolding, dependencies, and type definitions
+- [x] 01-02-PLAN.md - Connection registry and message queue services
+- [x] 01-03-PLAN.md - WebSocket handler with heartbeat and ACK mechanism
+- [x] 01-04-PLAN.md - HTTP routes for transcription and device listing
+- [x] 01-05-PLAN.md - Fastify integration and server entry point
 
 ### Phase 2: Windows Desktop Agent
 **Goal**: Windows PC receives text from backend and auto-pastes it at the current cursor position
@@ -48,10 +48,13 @@ Plans:
   3. Agent reconnects automatically after network interruption (with exponential backoff)
   4. Agent responds to heartbeat pings and detects connection loss via missed pongs
   5. If paste simulation fails, text remains in clipboard for manual paste
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md - Project scaffolding, TypeScript config, types, and configuration
+- [ ] 02-02-PLAN.md - Paste flow: clipboard operations, keyboard simulation, orchestration
+- [ ] 02-03-PLAN.md - WebSocket connection with reconnection and entry point
+- [ ] 02-04-PLAN.md - End-to-end verification and human testing
 
 ### Phase 3: Mobile App + Voice
 **Goal**: User dictates on Android phone, text is transcribed and delivered to selected PC with full resilience
@@ -89,8 +92,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend Foundation | 0/5 | Planned | - |
-| 2. Windows Desktop Agent | 0/TBD | Not started | - |
+| 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
+| 2. Windows Desktop Agent | 0/4 | In progress | - |
 | 3. Mobile App + Voice | 0/TBD | Not started | - |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
 
