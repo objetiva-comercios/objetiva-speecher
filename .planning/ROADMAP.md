@@ -13,7 +13,7 @@ This roadmap delivers a voice-to-text system where users dictate on Android and 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Backend Foundation** - HTTP/WebSocket server that routes transcriptions to agents
-- [ ] **Phase 2: Windows Desktop Agent** - Receives text via WebSocket, auto-pastes at cursor
+- [x] **Phase 2: Windows Desktop Agent** - Receives text via WebSocket, auto-pastes at cursor
 - [ ] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
 - [ ] **Phase 4: Linux Desktop Agent** - X11 agent support for Linux workstations
 
@@ -54,7 +54,7 @@ Plans:
 - [x] 02-01-PLAN.md - Project scaffolding, TypeScript config, types, and configuration
 - [x] 02-02-PLAN.md - Paste flow: clipboard operations, keyboard simulation, orchestration
 - [x] 02-03-PLAN.md - WebSocket connection with reconnection and entry point
-- [ ] 02-04-PLAN.md - End-to-end verification and human testing
+- [x] 02-04-PLAN.md - End-to-end verification and human testing
 
 ### Phase 3: Mobile App + Voice
 **Goal**: User dictates on Android phone, text is transcribed and delivered to selected PC with full resilience
@@ -93,7 +93,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
-| 2. Windows Desktop Agent | 3/4 | In progress | - |
+| 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 0/TBD | Not started | - |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
 
