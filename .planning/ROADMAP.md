@@ -51,9 +51,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Project scaffolding, TypeScript config, types, and configuration
-- [ ] 02-02-PLAN.md - Paste flow: clipboard operations, keyboard simulation, orchestration
-- [ ] 02-03-PLAN.md - WebSocket connection with reconnection and entry point
+- [x] 02-01-PLAN.md - Project scaffolding, TypeScript config, types, and configuration
+- [x] 02-02-PLAN.md - Paste flow: clipboard operations, keyboard simulation, orchestration
+- [x] 02-03-PLAN.md - WebSocket connection with reconnection and entry point
 - [ ] 02-04-PLAN.md - End-to-end verification and human testing
 
 ### Phase 3: Mobile App + Voice
@@ -93,7 +93,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
-| 2. Windows Desktop Agent | 0/4 | In progress | - |
+| 2. Windows Desktop Agent | 3/4 | In progress | - |
 | 3. Mobile App + Voice | 0/TBD | Not started | - |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
 
