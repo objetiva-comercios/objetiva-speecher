@@ -1,0 +1,22 @@
+{
+  "name": "objetiva-speecher-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "@fastify/websocket": "^11.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/node": "^20.17.17",
+    "@types/ws": "^8.5.14",
+    "tsx": "^4.19.2",
+    "pino-pretty": "^13.0.0"
+  }
+}
