@@ -66,10 +66,17 @@ Plans:
   3. User can select target PC from list of connected devices (by hostname)
   4. Transcriptions made while offline are queued and delivered when connection restores
   5. App shows connection status and handles speech recognition errors gracefully
-**Plans**: TBD
+**Plans**: 8 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md - Project setup, Capacitor config, shared types
+- [ ] 03-02-PLAN.md - Services: storage, queue, API client
+- [ ] 03-03-PLAN.md - Services: network, discovery, speech recognition
+- [ ] 03-04-PLAN.md - Device selection UI and network status hooks
+- [ ] 03-05-PLAN.md - Voice recording UI and speech recognition hook
+- [ ] 03-06-PLAN.md - Transcription editor, queue list, success feedback
+- [ ] 03-07-PLAN.md - App integration and Android configuration
+- [ ] 03-08-PLAN.md - End-to-end verification on device
 
 ### Phase 4: Linux Desktop Agent
 **Goal**: Linux workstations (X11) can receive and auto-paste text like Windows agents
@@ -94,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
-| 3. Mobile App + Voice | 0/TBD | Not started | - |
+| 3. Mobile App + Voice | 0/8 | Planned | - |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
 
 ---
