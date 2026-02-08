@@ -1,4 +1,4 @@
-import { Zeroconf, type ZeroConfWatchResult } from 'capacitor-zeroconf';
+import { ZeroConf, type ZeroConfWatchResult } from 'capacitor-zeroconf';
 import type { BackendService } from '../types';
 import { getItem, setItem, STORAGE_KEYS } from './storage';
 
@@ -21,12 +21,12 @@ export async function discoverBackend(): Promise<BackendService | null> {
     const timeout = setTimeout(() => {
       if (!resolved) {
         resolved = true;
-        Zeroconf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
+        ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
         resolve(null);
       }
     }, DISCOVERY_TIMEOUT_MS);
 
-    Zeroconf.watch(
+    ZeroConf.watch(
       { type: SERVICE_TYPE, domain: DOMAIN },
       (result: ZeroConfWatchResult) => {
         if (result.action === 'resolved' && !resolved) {
@@ -46,7 +46,7 @@ export async function discoverBackend(): Promise<BackendService | null> {
             resolve(null);
           }
 
-          Zeroconf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
+          ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
         }
       }
     ).catch(() => {
@@ -64,7 +64,7 @@ export async function discoverBackend(): Promise<BackendService | null> {
  */
 export async function stopDiscovery(): Promise<void> {
   try {
-    await Zeroconf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN });
+    await ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN });
   } catch {
     // Ignore errors on cleanup
   }

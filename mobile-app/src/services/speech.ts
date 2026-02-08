@@ -84,13 +84,7 @@ export function setupSpeechListeners(
     partialCallback?.(text);
   });
 
-  // Error handling with Spanish messages
-  SpeechRecognition.addListener('error', (error: { error: number }) => {
-    const message = getErrorMessage(error.error);
-    errorCallback?.({ code: error.error, message });
-  });
-
-  // Listening state changes
+  // Listening state changes - also used to detect when recognition stops unexpectedly
   SpeechRecognition.addListener('listeningState', (data: { status: string }) => {
     const isListening = data.status === 'started';
     listeningCallback?.(isListening);
@@ -101,14 +95,23 @@ export function setupSpeechListeners(
  * Start speech recognition.
  * Per research: popup: false is CRITICAL for partialResults on Android.
  * Language hardcoded to es-AR per project constraints.
+ * Errors are reported via the errorCallback passed to setupSpeechListeners.
  */
 export async function startListening(): Promise<void> {
-  await SpeechRecognition.start({
-    language: 'es-AR',
-    partialResults: true,
-    popup: false,  // CRITICAL: must be false for partialResults on Android
-    maxResults: 1,
-  });
+  try {
+    await SpeechRecognition.start({
+      language: 'es-AR',
+      partialResults: true,
+      popup: false,  // CRITICAL: must be false for partialResults on Android
+      maxResults: 1,
+    });
+  } catch (err: any) {
+    // Report error via callback - extract error code if available
+    const code = typeof err?.code === 'number' ? err.code : -1;
+    const message = getErrorMessage(code);
+    errorCallback?.({ code, message });
+    throw err;  // Re-throw so caller knows it failed
+  }
 }
 
 /**

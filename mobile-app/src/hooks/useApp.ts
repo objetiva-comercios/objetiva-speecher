@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { initializeDiscovery, getBackendUrl, setManualBackendUrl } from '../services/discovery';
+import { initializeDiscovery, setManualBackendUrl } from '../services/discovery';
 import { initApiClient, getApiClient, isApiClientInitialized } from '../services/api';
 import { setReconnecting } from '../services/network';
 
