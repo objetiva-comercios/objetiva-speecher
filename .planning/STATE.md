@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 3 - Mobile App + Voice (03-01, 03-02, 03-03 complete)
+**Current focus:** Phase 3 - Mobile App + Voice (03-01 through 03-06 complete)
 
 ## Current Position
 
 Phase: 3 of 4 (Mobile App + Voice)
-Plan: 3 of 8 in current phase (03-01, 03-02, 03-03 complete)
+Plan: 6 of 8 in current phase (03-01, 03-02, 03-03, 03-06 complete)
 Status: In progress
-Last activity: 2026-02-08 -- Completed 03-03-PLAN.md (native platform services)
+Last activity: 2026-02-08 -- Completed 03-06-PLAN.md (UI components)
 
-Progress: [██████████] 100% (phases 1-2), Phase 3: 3/8
+Progress: [██████████] 100% (phases 1-2), Phase 3: 4/8
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 4 min
-- Total execution time: 0.9 hours
+- Total execution time: 1.0 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [██████████] 100% (phases 1-2), Phase 3: 3/8
 |-------|-------|-------|----------|
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
-| 3. Mobile App + Voice | 3/8 | 14 min | 4.7 min |
+| 3. Mobile App + Voice | 4/8 | 19 min | 4.8 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (11 min), 02-04 (0 min), 03-02 (4 min), 03-01 (7 min), 03-03 (3 min)
+- Last 5 plans: 02-04 (0 min), 03-02 (4 min), 03-01 (7 min), 03-03 (3 min), 03-06 (5 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 - Discovery has 10-second mDNS timeout then falls back to stored URL
 - Speech recognition uses popup: false for partialResults on Android
 - All 13 SpeechRecognizer error codes mapped to Spanish messages
+- useQueue hook wraps queue service functions with state refresh
+- Swipe-to-delete uses touch events with -80px threshold
+- TranscriptionEditor shows different UI based on recording state (idle/recording/editing)
+- SuccessFeedback auto-dismisses after 1.5 seconds
 
 ### Pending Todos
 
@@ -77,10 +81,10 @@ None.
 
 ### Blockers/Concerns
 
-None - services layer complete, ready for hooks.
+None - UI components complete, ready for useSpeech hook and integration.
 
 ## Session Continuity
 
-Last session: 2026-02-08T20:24:24Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-02-08T20:46:24Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None
