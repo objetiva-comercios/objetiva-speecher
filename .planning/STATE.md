@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 3 - Mobile App + Voice (Core Services complete)
+**Current focus:** Phase 3 - Mobile App + Voice (03-01 and 03-02 complete)
 
 ## Current Position
 
 Phase: 3 of 4 (Mobile App + Voice)
-Plan: 2 of 8 in current phase
+Plan: 2 of 8 in current phase (03-01 and 03-02 complete)
 Status: In progress
-Last activity: 2026-02-08 -- Completed 03-02-PLAN.md
+Last activity: 2026-02-08 -- Completed 03-01-PLAN.md (project initialization)
 
 Progress: [██████████] 100% (phases 1-2), Phase 3: 2/8
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 4 min
-- Total execution time: 0.73 hours
+- Total execution time: 0.85 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [██████████] 100% (phases 1-2), Phase 3: 2/8
 |-------|-------|-------|----------|
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
-| 3. Mobile App + Voice | 1/8 | 4 min | 4 min |
+| 3. Mobile App + Voice | 2/8 | 11 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (6 min), 02-02 (3 min), 02-03 (11 min), 02-04 (0 min), 03-02 (4 min)
+- Last 5 plans: 02-02 (3 min), 02-03 (11 min), 02-04 (0 min), 03-02 (4 min), 03-01 (7 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - Queue persists immediately on every mutation to survive app kill
 - API client uses singleton pattern with lazy initialization (initApiClient before getApiClient)
 - replayQueue stops on first failure to maintain delivery order
+- Tailwind v4 with @tailwindcss/postcss (v4 changed import syntax)
+- Cleartext enabled in Capacitor for local network HTTP
+- Type definitions mirror backend ApiResponse discriminated union
 
 ### Pending Todos
 
@@ -70,10 +73,10 @@ None.
 
 ### Blockers/Concerns
 
-- 03-01 (project scaffolding) was not executed before 03-02 - scaffolding created as deviation during 03-02
+None - 03-01 scaffolding now complete.
 
 ## Session Continuity
 
-Last session: 2026-02-08T15:58:38Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-02-08T16:39:22Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
