@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 2 Complete - Ready for Phase 3
+**Current focus:** Phase 3 - Mobile App + Voice (Core Services complete)
 
 ## Current Position
 
-Phase: 2 of 4 (Windows Desktop Agent) - COMPLETE
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-02-07 -- Completed 02-04-PLAN.md
+Phase: 3 of 4 (Mobile App + Voice)
+Plan: 2 of 8 in current phase
+Status: In progress
+Last activity: 2026-02-08 -- Completed 03-02-PLAN.md
 
-Progress: [█████████.] 90%
+Progress: [██████████] 100% (phases 1-2), Phase 3: 2/8
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 4 min
-- Total execution time: 0.67 hours
+- Total execution time: 0.73 hours
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [█████████.] 90%
 |-------|-------|-------|----------|
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
+| 3. Mobile App + Voice | 1/8 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-05 (6 min), 02-01 (6 min), 02-02 (3 min), 02-03 (11 min), 02-04 (0 min - verification)
+- Last 5 plans: 02-01 (6 min), 02-02 (3 min), 02-03 (11 min), 02-04 (0 min), 03-02 (4 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -58,6 +59,10 @@ Recent decisions affecting current work:
 - Used @jitsi/robotjs instead of @nut-tree/nut-js (nut.js requires paid registry)
 - Agent config constants from research: 1s-30s reconnect, 35s heartbeat, 75ms paste delay
 - robotjs keyTap for atomic Ctrl+V (press+release in one call, avoids stuck keys)
+- Storage uses getJSON/setJSON helpers for typed Preferences access
+- Queue persists immediately on every mutation to survive app kill
+- API client uses singleton pattern with lazy initialization (initApiClient before getApiClient)
+- replayQueue stops on first failure to maintain delivery order
 
 ### Pending Todos
 
@@ -65,10 +70,10 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- 03-01 (project scaffolding) was not executed before 03-02 - scaffolding created as deviation during 03-02
 
 ## Session Continuity
 
-Last session: 2026-02-07T22:05:48Z
-Stopped at: Completed 02-04-PLAN.md (Phase 2 Complete)
+Last session: 2026-02-08T15:58:38Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
