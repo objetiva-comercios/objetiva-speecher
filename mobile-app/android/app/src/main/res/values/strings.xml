@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Objetiva Speecher</string>
+    <string name="title_activity_main">Objetiva Speecher</string>
+    <string name="package_name">com.objetiva.speecher</string>
+    <string name="custom_url_scheme">com.objetiva.speecher</string>
+</resources>
