@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 3 - Mobile App + Voice (03-01 through 03-06 complete)
+**Current focus:** Phase 3 - Mobile App + Voice (03-01 through 03-07 complete)
 
 ## Current Position
 
 Phase: 3 of 4 (Mobile App + Voice)
-Plan: 6 of 8 in current phase (03-01, 03-02, 03-03, 03-04, 03-05, 03-06 complete)
+Plan: 7 of 8 in current phase (03-01, 03-02, 03-03, 03-04, 03-05, 03-06, 03-07 complete)
 Status: In progress
-Last activity: 2026-02-08 -- Completed 03-04-PLAN.md (device selection UI)
+Last activity: 2026-02-08 -- Completed 03-07-PLAN.md (app integration)
 
-Progress: [██████████] 100% (phases 1-2), Phase 3: 6/8
+Progress: [██████████] 100% (phases 1-2), Phase 3: 7/8
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 4 min
-- Total execution time: 1.2 hours
+- Total execution time: 1.3 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [██████████] 100% (phases 1-2), Phase 3: 6/8
 |-------|-------|-------|----------|
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
-| 3. Mobile App + Voice | 6/8 | 31 min | 5 min |
+| 3. Mobile App + Voice | 7/8 | 39 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (7 min), 03-03 (3 min), 03-06 (5 min), 03-05 (6 min), 03-04 (6 min)
+- Last 5 plans: 03-03 (3 min), 03-06 (5 min), 03-05 (6 min), 03-04 (6 min), 03-07 (8 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -79,6 +79,11 @@ Recent decisions affecting current work:
 - 5-second polling interval for device list per research recommendation
 - Auto-select first device when none selected and devices available
 - Status dots use emoji (green/white circles) for cross-platform compatibility
+- useApp hook handles three states: initializing, configuring, ready
+- ConfigScreen shown when mDNS discovery fails and no stored URL
+- handleReconnect exported separately for use in network callback
+- Recording disabled when offline, no devices, or not ready
+- Failed sends automatically queue for retry
 
 ### Pending Todos
 
@@ -86,10 +91,10 @@ None.
 
 ### Blockers/Concerns
 
-None - device selection UI complete, ready for screen composition and integration.
+None - app integration complete, ready for testing and polish (03-08).
 
 ## Session Continuity
 
-Last session: 2026-02-08T20:47:10Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-02-08T21:10:00Z
+Stopped at: Completed 03-07-PLAN.md
 Resume file: None
