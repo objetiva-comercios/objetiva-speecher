@@ -1,6 +1,10 @@
+// Default backend URL - can be overridden via SPEECHER_BACKEND_URL env var
+// For local development: ws://localhost:3000/ws
+const DEFAULT_BACKEND_URL = 'wss://speecher.objetiva.com.ar/ws';
+
 export const config = {
   // Backend connection
-  BACKEND_URL: process.env.SPEECHER_BACKEND_URL || 'ws://localhost:3000/ws',
+  BACKEND_URL: process.env.SPEECHER_BACKEND_URL || DEFAULT_BACKEND_URL,
 
   // Reconnection (RES-04)
   RECONNECT_MIN_DELAY: 1000,      // 1s initial

@@ -21,16 +21,14 @@ function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
-  // Queue hook
+  // Queue hook (for offline/failed sends)
   const { items: queueItems, addToQueue, removeFromQueue, replayAll, isReplaying } = useQueue();
 
   // Network status with reconnect handler
   const { status: networkStatus, isOnline } = useNetworkStatus(
-    // onOnline - trigger queue replay
     useCallback(() => {
       handleReconnect(replayAll);
     }, [replayAll]),
-    // onOffline
     undefined
   );
 
@@ -43,7 +41,7 @@ function App() {
     hasDevices,
   } = useDeviceList();
 
-  // Speech recognition
+  // Speech recognition - simplified
   const {
     state: recordingState,
     liveText,
@@ -72,16 +70,13 @@ function App() {
       const response = await api.sendTranscription(selectedDevice, finalText.trim());
 
       if (response.success) {
-        // Show success feedback
         setShowSuccess(true);
         resetToIdle();
       } else {
-        // Queue for later
         await addToQueue(selectedDevice, finalText.trim());
         resetToIdle();
       }
     } catch {
-      // Network error - queue it
       await addToQueue(selectedDevice, finalText.trim());
       resetToIdle();
     } finally {
@@ -103,7 +98,10 @@ function App() {
   // Show loading while initializing
   if (appState === 'initializing') {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center" style={{
+        paddingTop: 'var(--sat, 0px)',
+        paddingBottom: 'var(--sab, 0px)'
+      }}>
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="mt-4 text-gray-600">Conectando...</p>
@@ -113,19 +111,24 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-100 p-4" style={{
+      paddingTop: 'calc(1rem + var(--sat, 0px))',
+      paddingBottom: 'calc(1rem + var(--sab, 0px))',
+      paddingLeft: 'calc(1rem + var(--sal, 0px))',
+      paddingRight: 'calc(1rem + var(--sar, 0px))'
+    }}>
       {/* Header with device selector and status */}
       <header className="mb-6">
         <h1 className="text-xl font-bold text-gray-800 mb-4">
           Objetiva Speecher
         </h1>
 
-        {/* Status indicator near device selector per user decision */}
+        {/* Status indicator */}
         <div className="flex items-center justify-between mb-3">
           <StatusIndicator status={networkStatus} />
         </div>
 
-        {/* Device selector always visible per user decision */}
+        {/* Device selector */}
         <DeviceSelector
           devices={devices}
           selectedDevice={selectedDevice}
@@ -135,7 +138,7 @@ function App() {
         />
       </header>
 
-      {/* Offline banner per user decision */}
+      {/* Offline banner */}
       <OfflineBanner status={networkStatus} />
 
       {/* Main recording area */}
@@ -161,7 +164,7 @@ function App() {
           isSending={isSending}
         />
 
-        {/* Record button - centered when visible */}
+        {/* Record button */}
         {recordingState !== 'editing' && (
           <div className="flex justify-center">
             <RecordButton
@@ -203,22 +206,40 @@ function App() {
 
 // Config screen for manual backend URL entry
 interface ConfigScreenProps {
-  onSubmit: (url: string) => void;
+  onSubmit: (url: string) => Promise<void>;
   error: string | null;
 }
 
 function ConfigScreen({ onSubmit, error }: ConfigScreenProps) {
   const [url, setUrl] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const displayError = localError || error;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      onSubmit(url.trim());
+    if (!url.trim() || isConnecting) return;
+
+    setIsConnecting(true);
+    setLocalError(null);
+
+    try {
+      await onSubmit(url.trim());
+    } catch (err: any) {
+      setLocalError(err.message || 'Error de conexion');
+    } finally {
+      setIsConnecting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 flex flex-col justify-center">
+    <div className="min-h-screen bg-gray-100 p-4 flex flex-col justify-center" style={{
+      paddingTop: 'calc(1rem + var(--sat, 0px))',
+      paddingBottom: 'calc(1rem + var(--sab, 0px))',
+      paddingLeft: 'calc(1rem + var(--sal, 0px))',
+      paddingRight: 'calc(1rem + var(--sar, 0px))'
+    }}>
       <div className="max-w-sm mx-auto w-full">
         <h1 className="text-xl font-bold text-gray-800 mb-2 text-center">
           Objetiva Speecher
@@ -233,19 +254,24 @@ function ConfigScreen({ onSubmit, error }: ConfigScreenProps) {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="http://192.168.1.100:3000"
+            disabled={isConnecting}
             className="
               w-full p-3 rounded-lg border border-gray-300
               focus:ring-2 focus:ring-blue-500 focus:border-blue-500
             "
           />
 
-          {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+          {displayError && !isConnecting && (
+            <p className="text-red-600 text-sm">{displayError}</p>
+          )}
+
+          {isConnecting && (
+            <p className="text-blue-600 text-sm">Conectando...</p>
           )}
 
           <button
             type="submit"
-            disabled={!url.trim()}
+            disabled={!url.trim() || isConnecting}
             className="
               w-full py-3 px-4 rounded-lg
               bg-blue-500 text-white font-medium
@@ -253,7 +279,7 @@ function ConfigScreen({ onSubmit, error }: ConfigScreenProps) {
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
-            Conectar
+            {isConnecting ? "Conectando..." : "Conectar"}
           </button>
         </form>
 

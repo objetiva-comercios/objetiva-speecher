@@ -72,15 +72,20 @@ export class ApiClient {
 
   /**
    * Check if backend is reachable.
-   * Uses /devices as health check endpoint.
+   * Uses /health endpoint.
    */
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/devices`, {
+      // Create AbortController with manual timeout for Android WebView compatibility
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const response = await fetch(`${this.baseUrl}/health`, {
         method: 'GET',
-        // Short timeout for health check
-        signal: AbortSignal.timeout(3000),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
       return response.ok;
     } catch {
       return false;

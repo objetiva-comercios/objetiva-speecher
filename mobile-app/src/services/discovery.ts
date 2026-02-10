@@ -1,81 +1,75 @@
-import { ZeroConf, type ZeroConfWatchResult } from 'capacitor-zeroconf';
 import type { BackendService } from '../types';
 import { getItem, setItem, STORAGE_KEYS } from './storage';
 
-const SERVICE_TYPE = '_speecher._tcp.';
-const DOMAIN = 'local.';
-const DISCOVERY_TIMEOUT_MS = 10000;  // 10 seconds
+// Production backend URL
+const PRODUCTION_BACKEND_URL = 'https://speecher.objetiva.com.ar';
 
-let discoveredBackend: BackendService | null = null;
-let manualBackendUrl: string | null = null;
-
-/**
- * Attempt to discover backend via mDNS.
- * Times out after 10 seconds and falls back to stored/manual URL.
- * Returns discovered service or null.
- */
-export async function discoverBackend(): Promise<BackendService | null> {
-  return new Promise((resolve) => {
-    let resolved = false;
-
-    const timeout = setTimeout(() => {
-      if (!resolved) {
-        resolved = true;
-        ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
-        resolve(null);
-      }
-    }, DISCOVERY_TIMEOUT_MS);
-
-    ZeroConf.watch(
-      { type: SERVICE_TYPE, domain: DOMAIN },
-      (result: ZeroConfWatchResult) => {
-        if (result.action === 'resolved' && !resolved) {
-          resolved = true;
-          clearTimeout(timeout);
-
-          const ip = result.service.ipv4Addresses?.[0] || result.service.ipv6Addresses?.[0];
-          if (ip) {
-            discoveredBackend = {
-              hostname: result.service.hostname || 'unknown',
-              ip,
-              port: result.service.port,
-              url: `http://${ip}:${result.service.port}`,
-            };
-            resolve(discoveredBackend);
-          } else {
-            resolve(null);
-          }
-
-          ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN }).catch(() => {});
-        }
-      }
-    ).catch(() => {
-      if (!resolved) {
-        resolved = true;
-        clearTimeout(timeout);
-        resolve(null);
-      }
-    });
-  });
-}
+// For development, can override via stored URL
+let backendUrl: string = PRODUCTION_BACKEND_URL;
 
 /**
- * Stop watching for mDNS services.
+ * Try to reach a backend at given URL.
+ * Returns true if backend responds with valid JSON.
  */
-export async function stopDiscovery(): Promise<void> {
+async function tryBackendUrl(url: string): Promise<boolean> {
   try {
-    await ZeroConf.unwatch({ type: SERVICE_TYPE, domain: DOMAIN });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(`${url}/health`, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response.ok;
   } catch {
-    // Ignore errors on cleanup
+    return false;
   }
 }
 
 /**
- * Set manual backend URL.
+ * Initialize discovery service.
+ * With VPS backend, this just verifies the production URL is reachable.
+ * Falls back to stored URL if production URL fails (for development).
+ */
+export async function initializeDiscovery(): Promise<string | null> {
+  console.log('[Discovery] Initializing with VPS backend...');
+
+  // Check if there's a stored override URL (for development)
+  const storedUrl = await getItem(STORAGE_KEYS.BACKEND_URL);
+
+  // Try production URL first
+  console.log('[Discovery] Checking production URL:', PRODUCTION_BACKEND_URL);
+  const productionWorks = await tryBackendUrl(PRODUCTION_BACKEND_URL);
+
+  if (productionWorks) {
+    console.log('[Discovery] Production backend reachable');
+    backendUrl = PRODUCTION_BACKEND_URL;
+    return PRODUCTION_BACKEND_URL;
+  }
+
+  // Production failed, try stored URL if exists (development fallback)
+  if (storedUrl) {
+    console.log('[Discovery] Production failed, trying stored URL:', storedUrl);
+    const storedWorks = await tryBackendUrl(storedUrl);
+    if (storedWorks) {
+      console.log('[Discovery] Stored URL works:', storedUrl);
+      backendUrl = storedUrl;
+      return storedUrl;
+    }
+  }
+
+  console.log('[Discovery] No reachable backend found');
+  return null;
+}
+
+/**
+ * Set manual backend URL (for development/testing).
  * Persists to storage for future app launches.
  */
 export async function setManualBackendUrl(url: string): Promise<void> {
-  manualBackendUrl = url;
+  backendUrl = url;
   await setItem(STORAGE_KEYS.BACKEND_URL, url);
 }
 
@@ -88,46 +82,40 @@ export async function getStoredBackendUrl(): Promise<string | null> {
 
 /**
  * Get current backend URL.
- * Priority: manual URL > discovered URL > null
  */
-export function getBackendUrl(): string | null {
-  if (manualBackendUrl) return manualBackendUrl;
-  if (discoveredBackend) return discoveredBackend.url;
-  return null;
+export function getBackendUrl(): string {
+  return backendUrl;
 }
 
 /**
- * Initialize discovery service.
- * Loads stored URL and attempts mDNS discovery.
- * Returns the determined backend URL or null if not found.
- */
-export async function initializeDiscovery(): Promise<string | null> {
-  // First, load any stored manual URL
-  const storedUrl = await getStoredBackendUrl();
-  if (storedUrl) {
-    manualBackendUrl = storedUrl;
-  }
-
-  // Attempt mDNS discovery
-  const discovered = await discoverBackend();
-
-  // Return best available URL
-  if (discovered) {
-    return discovered.url;
-  }
-  return manualBackendUrl;
-}
-
-/**
- * Check if backend URL is configured (either discovered or manual).
+ * Check if backend URL is configured.
  */
 export function isBackendConfigured(): boolean {
-  return getBackendUrl() !== null;
+  return backendUrl !== null;
 }
 
 /**
  * Get discovered backend info (for display purposes).
+ * With VPS mode, returns a simplified object.
  */
 export function getDiscoveredBackend(): BackendService | null {
-  return discoveredBackend;
+  return {
+    hostname: 'VPS',
+    ip: backendUrl,
+    port: 443,
+    url: backendUrl,
+  };
+}
+
+// Legacy exports for compatibility
+export async function discoverBackend(): Promise<BackendService | null> {
+  const url = await initializeDiscovery();
+  if (url) {
+    return getDiscoveredBackend();
+  }
+  return null;
+}
+
+export async function stopDiscovery(): Promise<void> {
+  // No-op for VPS mode
 }
