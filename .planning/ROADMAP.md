@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Backend Foundation** - HTTP/WebSocket server that routes transcriptions to agents
 - [x] **Phase 2: Windows Desktop Agent** - Receives text via WebSocket, auto-pastes at cursor
-- [ ] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
+- [x] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
 - [ ] **Phase 4: Linux Desktop Agent** - X11 agent support for Linux workstations
 
 ## Phase Details
@@ -69,14 +69,14 @@ Plans:
 **Plans**: 8 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Project setup, Capacitor config, shared types
-- [ ] 03-02-PLAN.md - Services: storage, queue, API client
-- [ ] 03-03-PLAN.md - Services: network, discovery, speech recognition
-- [ ] 03-04-PLAN.md - Device selection UI and network status hooks
-- [ ] 03-05-PLAN.md - Voice recording UI and speech recognition hook
-- [ ] 03-06-PLAN.md - Transcription editor, queue list, success feedback
-- [ ] 03-07-PLAN.md - App integration and Android configuration
-- [ ] 03-08-PLAN.md - End-to-end verification on device
+- [x] 03-01-PLAN.md - Project setup, Capacitor config, shared types
+- [x] 03-02-PLAN.md - Services: storage, queue, API client
+- [x] 03-03-PLAN.md - Services: network, discovery, speech recognition
+- [x] 03-04-PLAN.md - Device selection UI and network status hooks
+- [x] 03-05-PLAN.md - Voice recording UI and speech recognition hook
+- [x] 03-06-PLAN.md - Transcription editor, queue list, success feedback
+- [x] 03-07-PLAN.md - App integration and Android configuration
+- [x] 03-08-PLAN.md - End-to-end verification on device
 
 ### Phase 4: Linux Desktop Agent
 **Goal**: Linux workstations (X11) can receive and auto-paste text like Windows agents
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
-| 3. Mobile App + Voice | 0/8 | Planned | - |
+| 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
 | 4. Linux Desktop Agent | 0/TBD | Not started | - |
 
 ---
