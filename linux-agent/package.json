@@ -1,0 +1,29 @@
+{
+  "name": "speecher-linux-agent",
+  "version": "1.0.0",
+  "description": "Linux desktop agent for Speecher - receives transcriptions and auto-pastes at cursor using xdotool",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts | pino-pretty",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "clipboardy": "^5.2.1",
+    "command-exists": "^1.2.9",
+    "pino": "^9.0.0",
+    "ws": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/command-exists": "^1.2.3",
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.0.0",
+    "pino-pretty": "^13.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
