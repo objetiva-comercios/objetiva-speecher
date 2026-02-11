@@ -87,10 +87,13 @@ Plans:
   2. Text received via WebSocket appears at cursor position on X11 desktop
   3. Agent detects X11 display server and uses compatible clipboard/keyboard tools
   4. Agent shares reconnection and heartbeat behavior with Windows agent
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md - Project scaffolding, types, config, and startup validation
+- [ ] 04-02-PLAN.md - Paste flow: clipboard and xdotool keyboard simulation
+- [ ] 04-03-PLAN.md - WebSocket connection with reconnection and entry point
+- [ ] 04-04-PLAN.md - End-to-end verification on Linux desktop
 
 ## Progress
 
@@ -102,7 +105,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
-| 4. Linux Desktop Agent | 0/TBD | Not started | - |
+| 4. Linux Desktop Agent | 0/4 | Planned | - |
 
 ---
 *Roadmap created: 2026-02-06*
