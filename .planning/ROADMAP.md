@@ -90,7 +90,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md - Project scaffolding, types, config, and startup validation
+- [x] 04-01-PLAN.md - Project scaffolding, types, config, and startup validation
 - [ ] 04-02-PLAN.md - Paste flow: clipboard and xdotool keyboard simulation
 - [ ] 04-03-PLAN.md - WebSocket connection with reconnection and entry point
 - [ ] 04-04-PLAN.md - End-to-end verification on Linux desktop
@@ -105,7 +105,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Backend Foundation | 5/5 | Complete | 2026-02-07 |
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
-| 4. Linux Desktop Agent | 0/4 | Planned | - |
+| 4. Linux Desktop Agent | 1/4 | In progress | - |
 
 ---
 *Roadmap created: 2026-02-06*

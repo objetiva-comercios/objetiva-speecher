@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 3 COMPLETE - Ready for Phase 4 (Linux Desktop Agent)
+**Current focus:** Phase 4 in progress (Linux Desktop Agent)
 
 ## Current Position
 
-Phase: 3 of 4 (Mobile App + Voice) - COMPLETE
-Plan: 8 of 8 in current phase (ALL COMPLETE)
-Status: Phase 3 complete, ready for Phase 4
-Last activity: 2026-02-11 -- Completed 03-08-PLAN.md (E2E verification)
+Phase: 4 of 4 (Linux Desktop Agent)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-11 -- Completed 04-01-PLAN.md (Package scaffolding)
 
-Progress: [████████████████████] 100% (phases 1-3), Phase 4: 0/TBD
+Progress: [██████████████████░░] 90% (18/20 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 4 min
-- Total execution time: 1.4 hours
+- Total execution time: 1.5 hours
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [████████████████████] 100% (p
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
 | 3. Mobile App + Voice | 8/8 | 44 min | 5.5 min |
+| 4. Linux Desktop Agent | 1/4 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-05 (6 min), 03-06 (5 min), 03-07 (8 min), 03-08 (5 min)
+- Last 5 plans: 03-06 (5 min), 03-07 (8 min), 03-08 (5 min), 04-01 (5 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - Recording disabled when offline, no devices, or not ready
 - Failed sends automatically queue for retry
 - All Phase 3 success criteria verified via human testing on real device
+- Duplicate types in linux-agent rather than shared package for simplicity
+- SPEECHER_SERVER_URL env var (same as Windows agent)
+- command-exists package for xdotool detection
 
 ### Pending Todos
 
@@ -92,10 +96,10 @@ None.
 
 ### Blockers/Concerns
 
-None - Phase 3 complete. System verified working on real hardware.
+None - Phase 4 in progress.
 
 ## Session Continuity
 
-Last session: 2026-02-11T01:42:00Z
-Stopped at: Completed 03-08-PLAN.md (Phase 3 complete)
+Last session: 2026-02-11T22:24:39Z
+Stopped at: Completed 04-01-PLAN.md (Package scaffolding)
 Resume file: None
