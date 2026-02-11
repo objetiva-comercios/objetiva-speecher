@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Phase: 4 of 4 (Linux Desktop Agent)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-11 -- Completed 04-01-PLAN.md (Package scaffolding)
+Last activity: 2026-02-11 -- Completed 04-02-PLAN.md (Paste flow)
 
-Progress: [██████████████████░░] 90% (18/20 plans complete)
+Progress: [███████████████████░] 95% (19/20 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 4 min
 - Total execution time: 1.5 hours
 
@@ -30,10 +30,10 @@ Progress: [██████████████████░░] 90% (18
 | 1. Backend Foundation | 5/5 | 20 min | 4 min |
 | 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
 | 3. Mobile App + Voice | 8/8 | 44 min | 5.5 min |
-| 4. Linux Desktop Agent | 1/4 | 5 min | 5 min |
+| 4. Linux Desktop Agent | 2/4 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-06 (5 min), 03-07 (8 min), 03-08 (5 min), 04-01 (5 min)
+- Last 5 plans: 03-07 (8 min), 03-08 (5 min), 04-01 (5 min), 04-02 (4 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -89,6 +89,9 @@ Recent decisions affecting current work:
 - Duplicate types in linux-agent rather than shared package for simplicity
 - SPEECHER_SERVER_URL env var (same as Windows agent)
 - command-exists package for xdotool detection
+- xdotool via child_process.spawn (no robotjs for Linux)
+- --clearmodifiers flag prevents stuck modifier keys on xdotool
+- simulatePaste is async (returns Promise) on Linux unlike sync robotjs on Windows
 
 ### Pending Todos
 
@@ -100,6 +103,6 @@ None - Phase 4 in progress.
 
 ## Session Continuity
 
-Last session: 2026-02-11T22:24:39Z
-Stopped at: Completed 04-01-PLAN.md (Package scaffolding)
+Last session: 2026-02-11T22:37:00Z
+Stopped at: Completed 04-02-PLAN.md (Paste flow)
 Resume file: None
