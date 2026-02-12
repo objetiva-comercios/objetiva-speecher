@@ -2,111 +2,40 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-06)
+See: .planning/PROJECT.md (updated 2026-02-11)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** Phase 4 in progress (Linux Desktop Agent)
+**Current focus:** v1.0 SHIPPED — Ready for next milestone
 
 ## Current Position
 
-Phase: 4 of 4 (Linux Desktop Agent)
+Phase: 4 of 4 (Linux Desktop Agent) - MILESTONE COMPLETE
 Plan: 4 of 4 in current phase
-Status: COMPLETE - All phases finished
-Last activity: 2026-02-12 -- Completed 04-04-PLAN.md (E2E Verification)
+Status: v1.0 SHIPPED
+Last activity: 2026-02-11 -- Milestone v1.0 completed and archived
 
 Progress: [█████████████████████] 100% (21/21 plans complete)
 
-## Performance Metrics
+## v1.0 Milestone Summary
 
-**Velocity:**
-- Total plans completed: 21
-- Average duration: 4 min
-- Total execution time: 1.5 hours
+- 4 phases, 21 plans executed
+- 50/50 v1 requirements shipped
+- 4,765 lines of TypeScript
+- 5 days development (2026-02-06 → 2026-02-11)
 
-**By Phase:**
+**Archived to:**
+- .planning/milestones/v1.0-ROADMAP.md
+- .planning/milestones/v1.0-REQUIREMENTS.md
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 1. Backend Foundation | 5/5 | 20 min | 4 min |
-| 2. Windows Desktop Agent | 4/4 | 20 min | 5 min |
-| 3. Mobile App + Voice | 8/8 | 44 min | 5.5 min |
-| 4. Linux Desktop Agent | 4/4 | 15 min | 3.75 min |
+## Next Steps
 
-**Recent Trend:**
-- Last 5 plans: 04-01 (5 min), 04-02 (4 min), 04-03 (4 min), 04-04 (2 min)
-- Trend: stable
-
-*Updated after each plan completion*
-
-## Accumulated Context
-
-### Decisions
-
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- Used discriminated union pattern for API responses (ApiSuccessResponse | ApiErrorResponse)
-- Used type imports for ws.WebSocket to avoid runtime dependency in types
-- Error codes: AGENT_OFFLINE, QUEUE_FULL, INVALID_DEVICE_ID, INTERNAL_ERROR, ACK_TIMEOUT, DUPLICATE_CONNECTION
-- Registry returns boolean on registerAgent for duplicate detection
-- Queue uses lazy cleanup on enqueue rather than interval-based pruning
-- Shared normalizeDeviceId function exported from registry for cross-service consistency
-- 5 second ACK timeout per research recommendation
-- 30 second heartbeat interval with 2-missed-pong termination
-- Synchronous event attachment per research pitfall #1
-- Close code 4000 for duplicate connections
-- Return HTTP 200 for client validation errors with success:false in body
-- Structured JSON logging via Pino (Fastify default)
-- Used @jitsi/robotjs instead of @nut-tree/nut-js (nut.js requires paid registry)
-- Agent config constants from research: 1s-30s reconnect, 35s heartbeat, 75ms paste delay
-- robotjs keyTap for atomic Ctrl+V (press+release in one call, avoids stuck keys)
-- Storage uses getJSON/setJSON helpers for typed Preferences access
-- Queue persists immediately on every mutation to survive app kill
-- API client uses singleton pattern with lazy initialization (initApiClient before getApiClient)
-- replayQueue stops on first failure to maintain delivery order
-- Tailwind v4 with @tailwindcss/postcss (v4 changed import syntax)
-- Cleartext enabled in Capacitor for local network HTTP
-- Type definitions mirror backend ApiResponse discriminated union
-- Network service uses listener pattern with subscribeToNetworkStatus returning unsubscribe function
-- Discovery has 10-second mDNS timeout then falls back to stored URL
-- Speech recognition uses popup: false for partialResults on Android
-- All 13 SpeechRecognizer error codes mapped to Spanish messages
-- useQueue hook wraps queue service functions with state refresh
-- Swipe-to-delete uses touch events with -80px threshold
-- TranscriptionEditor shows different UI based on recording state (idle/recording/editing)
-- SuccessFeedback auto-dismisses after 1.5 seconds
-- CSS animation for waveform (SpeechRecognition lacks audio stream per research)
-- Hook returns full state + actions for component composition
-- 5-second polling interval for device list per research recommendation
-- Auto-select first device when none selected and devices available
-- Status dots use emoji (green/white circles) for cross-platform compatibility
-- useApp hook handles three states: initializing, configuring, ready
-- ConfigScreen shown when mDNS discovery fails and no stored URL
-- handleReconnect exported separately for use in network callback
-- Recording disabled when offline, no devices, or not ready
-- Failed sends automatically queue for retry
-- All Phase 3 success criteria verified via human testing on real device
-- Phase 4 E2E verification approved without Linux hardware testing (user unavailable)
-- Duplicate types in linux-agent rather than shared package for simplicity
-- SPEECHER_SERVER_URL env var (same as Windows agent)
-- command-exists package for xdotool detection
-- xdotool via child_process.spawn (no robotjs for Linux)
-- --clearmodifiers flag prevents stuck modifier keys on xdotool
-- simulatePaste is async (returns Promise) on Linux unlike sync robotjs on Windows
-- Entry point validates dependencies (DISPLAY, xdotool) before connecting
-- ReconnectionManager identical to Windows agent for consistent behavior
-- Graceful shutdown closes WebSocket and clears timers before exit
-
-### Pending Todos
-
-None.
-
-### Blockers/Concerns
-
-None - All phases complete. Project Speecher is feature-complete.
+Run `/gsd:new-milestone` to start v2.0 planning with:
+- Voice commands (Enter, Tab, etc.)
+- Multi-language support
+- macOS/Wayland support
 
 ## Session Continuity
 
-Last session: 2026-02-12T00:24:22Z
-Stopped at: PROJECT COMPLETE - All 21 plans executed
+Last session: 2026-02-11
+Stopped at: v1.0 milestone complete and archived
 Resume file: None
