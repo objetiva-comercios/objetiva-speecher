@@ -2,40 +2,36 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-11)
+See: .planning/PROJECT.md (updated 2026-02-12)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** v1.0 SHIPPED — Ready for next milestone
+**Current focus:** v1.1 Special Commands — Voice commands for Enter, Tab, punctuation
 
 ## Current Position
 
-Phase: 4 of 4 (Linux Desktop Agent) - MILESTONE COMPLETE
-Plan: 4 of 4 in current phase
-Status: v1.0 SHIPPED
-Last activity: 2026-02-11 -- Milestone v1.0 completed and archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-12 — Milestone v1.1 started
 
-Progress: [█████████████████████] 100% (21/21 plans complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░░] 0% (defining requirements)
 
-## v1.0 Milestone Summary
+## Milestone v1.1 Goals
 
-- 4 phases, 21 plans executed
-- 50/50 v1 requirements shipped
-- 4,765 lines of TypeScript
-- 5 days development (2026-02-06 → 2026-02-11)
+- Parse voice commands in mobile app before sending
+- Support "nueva línea" / "enter" to insert Enter key
+- Support "tabulador" / "tab" to insert Tab key
+- Support punctuation commands (punto, coma, dos puntos, etc.)
+- Support "espacio" for explicit space insertion
+- Command words replaced with their symbols
 
-**Archived to:**
-- .planning/milestones/v1.0-ROADMAP.md
-- .planning/milestones/v1.0-REQUIREMENTS.md
+## Key Decisions (v1.1)
 
-## Next Steps
-
-Run `/gsd:new-milestone` to start v2.0 planning with:
-- Voice commands (Enter, Tab, etc.)
-- Multi-language support
-- macOS/Wayland support
+- Command parsing happens in mobile app (simplest, no backend/agent changes)
+- Punctuation behavior: replace word with symbol ("punto" → ".")
 
 ## Session Continuity
 
-Last session: 2026-02-11
-Stopped at: v1.0 milestone complete and archived
+Last session: 2026-02-12
+Stopped at: Starting v1.1 milestone, gathering requirements
 Resume file: None

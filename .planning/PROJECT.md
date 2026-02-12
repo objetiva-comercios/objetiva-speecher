@@ -30,11 +30,19 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 
 ### Active
 
-(None — planning next milestone)
+**Current Milestone: v1.1 Special Commands**
+
+**Goal:** Add voice commands for special keys and punctuation (Enter, Tab, punto, coma, etc.)
+
+**Target features:**
+- Parse voice commands in mobile app before sending
+- Support "nueva línea" / "enter" to insert Enter key
+- Support "tabulador" / "tab" to insert Tab key
+- Support punctuation commands (punto, coma, dos puntos, etc.)
+- Support "espacio" for explicit space insertion
+- Command words replaced with their symbols (e.g., "punto" → ".")
 
 ### Out of Scope
-
-- Voice commands for special keys (Enter, Tab, etc.) — v2 feature, needs design
 - Custom phrase replacement system — v2 feature, needs configuration approach
 - Multi-language support beyond es-AR — v2 feature
 - Authentication/authorization — single user on private network, not needed
@@ -78,5 +86,8 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 | Discriminated union for API responses | Type safety | ✓ Good |
 | Duplicate types per agent | Simplicity over shared package | — Pending review |
 
+| Parse commands in mobile app | Simpler than backend/agent, no protocol changes | — Pending |
+| Replace command words with symbols | "punto" → "." (not append) | — Pending |
+
 ---
-*Last updated: 2026-02-11 after v1.0 milestone*
+*Last updated: 2026-02-12 after starting v1.1 milestone*
