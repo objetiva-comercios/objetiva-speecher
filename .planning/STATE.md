@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 
 ## Current Position
 
-Phase: Phase 5 - Command Parser & Text Symbols
-Plan: Not yet planned
-Status: Ready for planning
-Last activity: 2026-02-12 — Roadmap created for v1.1
+Phase: 5 of 6 (Command Parser & Text Symbols)
+Plan: 1 of 3 (estimate)
+Status: Plan 05-01 complete
+Last activity: 2026-02-12 — Completed 05-01-PLAN.md (Command Parser TDD)
 
-Progress: [████░░░░░░░░░░░░░░░░] 20% (v1.0 complete, starting v1.1)
+Progress: [#####---------------] 25% (v1.0 complete, Phase 5 Plan 1 complete)
 
 ## Milestone v1.1 Goals
 
@@ -41,18 +41,23 @@ Progress: [████░░░░░░░░░░░░░░░░] 20% (v1
 
 ## Key Decisions (v1.1)
 
-- Command parsing happens in mobile app (simplest, no backend/agent changes for Phase 5)
-- Punctuation behavior: replace word with symbol ("punto" → ".")
-- Key actions need protocol extension (Phase 6)
-- Parser is case-insensitive
-- Mixed commands and text work together ("coma dos puntos" → ",:")
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-02-12 | Command parsing in mobile app | Simplest, no backend/agent changes for Phase 5 |
+| 2026-02-12 | Punctuation: word -> symbol | "punto" -> "." |
+| 2026-02-12 | Key actions deferred to Phase 6 | Needs protocol extension |
+| 2026-02-12 | Parser is case-insensitive | "Punto", "PUNTO" all work |
+| 2026-02-12 | Used vitest for testing | Minimal, Vite-native |
+| 2026-02-12 | \u0001/\u0002 markers for bracket types | Smart space normalization |
+| 2026-02-12 | NBSP placeholder for espacio | Prevents space collapse |
+| 2026-02-12 | Commands sorted by length | Longest-match-first |
 
 ## Performance Metrics
 
 **v1.0 Baseline:**
 - E2E latency: <2s (target met)
 - 4,765 lines of TypeScript
-- 5 days development (2026-02-06 → 2026-02-11)
+- 5 days development (2026-02-06 -> 2026-02-11)
 
 **v1.1 Targets:**
 - Maintain <2s E2E latency
@@ -65,18 +70,22 @@ Progress: [████░░░░░░░░░░░░░░░░] 20% (v1
 - 2026-02-12: Created roadmap for v1.1, split into parser phase (5) and protocol phase (6)
 - 2026-02-12: All punctuation in Phase 5 works with existing flow (text replacement only)
 - 2026-02-12: Key actions (Enter, Tab) deferred to Phase 6 (needs protocol work)
+- 2026-02-12: Implemented parseCommands with 23 command mappings
+- 2026-02-12: Used TDD methodology (63 tests)
 
 ### Active TODOs
-- [ ] Plan Phase 5 (command parser implementation)
-- [ ] Define command vocabulary and mappings
-- [ ] Design parser API in mobile app
+- [x] Plan Phase 5 (command parser implementation)
+- [x] Define command vocabulary and mappings
+- [x] Design parser API in mobile app
+- [ ] Integrate parser into speech recognition hook
+- [ ] Add visual feedback for command conversions
 
 ### Blockers
 None.
 
 ## Session Continuity
 
-Last session: 2026-02-12
-Stopped at: Roadmap creation complete, ready for Phase 5 planning
+Last session: 2026-02-12T18:03:35Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
-Next action: `/gsd:plan-phase 5`
+Next action: Plan 05-02 (parser integration) or continue with remaining Phase 5 plans
