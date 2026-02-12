@@ -1,133 +1,67 @@
-# Requirements: Objetiva Speecher
+# Requirements: Objetiva Speecher v1.1
 
-**Defined:** 2026-02-06
+**Defined:** 2026-02-12
 **Core Value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
 
-## v1 Requirements
+## v1.1 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+Requirements for this milestone. Voice commands for special keys and punctuation.
 
-### Backend Server
+### Command Parser
 
-- [ ] **BACK-01**: Backend accepts HTTP POST /transcription with deviceId and text
-- [ ] **BACK-02**: Backend maintains WebSocket server for agent connections
-- [ ] **BACK-03**: Backend maintains connection registry (deviceId -> WebSocket mapping)
-- [ ] **BACK-04**: Backend routes transcriptions to correct agent via WebSocket
-- [ ] **BACK-05**: Backend provides GET /devices API listing connected agents
-- [ ] **BACK-06**: Backend handles agent registration on WebSocket connect
-- [ ] **BACK-07**: Backend removes agents from registry on disconnect
-- [ ] **BACK-08**: Backend implements heartbeat ping/pong (20-30s intervals)
+- [ ] **PARSE-01**: Mobile app detects command words in transcribed text
+- [ ] **PARSE-02**: Command words are replaced with their output (symbol or key action)
+- [ ] **PARSE-03**: Parser processes text before sending to backend
+- [ ] **PARSE-04**: Non-command words pass through unchanged
+- [ ] **PARSE-05**: Parser is case-insensitive (handles "Punto" and "punto")
 
-### Voice Input & Recognition
+### Special Keys
 
-- [ ] **VOICE-01**: Mobile app provides tap-to-start voice recording button
-- [ ] **VOICE-02**: Mobile app provides tap-to-stop voice recording function
-- [ ] **VOICE-03**: Mobile app integrates Android SpeechRecognizer with es-AR locale
-- [ ] **VOICE-04**: Mobile app displays partial results during recognition
-- [ ] **VOICE-05**: Mobile app displays final transcription result
-- [ ] **VOICE-06**: Mobile app shows connection status indicator (connected/disconnected)
-- [ ] **VOICE-07**: Mobile app handles all SpeechRecognizer error codes gracefully
-- [ ] **VOICE-08**: Mobile app auto-reconnects to backend when connection drops
+- [ ] **KEY-01**: "nueva línea" or "enter" inserts Enter key action
+- [ ] **KEY-02**: "tabulador" or "tab" inserts Tab key action
+- [ ] **KEY-03**: "espacio" inserts explicit space character
 
-### Device Management
+### Basic Punctuation
 
-- [ ] **DEV-01**: Mobile app discovers backend server via mDNS
-- [ ] **DEV-02**: Mobile app fetches list of connected devices from backend
-- [ ] **DEV-03**: Mobile app displays devices by hostname in selection list
-- [ ] **DEV-04**: Mobile app allows user to select target device
-- [ ] **DEV-05**: Mobile app persists selected device across app restarts
-- [ ] **DEV-06**: Mobile app updates device list when devices connect/disconnect
+- [ ] **PUNCT-01**: "punto" → "."
+- [ ] **PUNCT-02**: "coma" → ","
+- [ ] **PUNCT-03**: "dos puntos" → ":"
+- [ ] **PUNCT-04**: "punto y coma" → ";"
+- [ ] **PUNCT-05**: "signo de interrogación" or "interrogación" → "?"
+- [ ] **PUNCT-06**: "signo de exclamación" or "exclamación" → "!"
+- [ ] **PUNCT-07**: "guión" → "-"
 
-### Desktop Agent (Windows)
+### Extended Punctuation
 
-- [ ] **WIN-01**: Windows agent connects to backend via WebSocket
-- [ ] **WIN-02**: Windows agent registers with hostname-based deviceId
-- [ ] **WIN-03**: Windows agent receives text via WebSocket messages
-- [ ] **WIN-04**: Windows agent writes text to clipboard using clipboardy
-- [ ] **WIN-05**: Windows agent simulates Ctrl+V keystroke using nut.js
-- [ ] **WIN-06**: Windows agent adds 50-100ms delay between clipboard write and paste
-- [ ] **WIN-07**: Windows agent verifies clipboard content before pasting
-- [ ] **WIN-08**: Windows agent retries paste if verification fails
+- [ ] **PUNCT-08**: "abrir paréntesis" → "("
+- [ ] **PUNCT-09**: "cerrar paréntesis" → ")"
+- [ ] **PUNCT-10**: "comillas" → '"'
+- [ ] **PUNCT-11**: "abrir comillas" → '"'
+- [ ] **PUNCT-12**: "cerrar comillas" → '"'
+- [ ] **PUNCT-13**: "arroba" → "@"
+- [ ] **PUNCT-14**: "punto com" → ".com"
 
-### Desktop Agent (Linux X11)
+### Backend Support
 
-- [ ] **LIN-01**: Linux agent connects to backend via WebSocket
-- [ ] **LIN-02**: Linux agent registers with hostname-based deviceId
-- [ ] **LIN-03**: Linux agent receives text via WebSocket messages
-- [ ] **LIN-04**: Linux agent writes text to clipboard using clipboardy/xclip
-- [ ] **LIN-05**: Linux agent simulates Ctrl+V keystroke using nut.js/xdotool
-- [ ] **LIN-06**: Linux agent detects X11 display server at runtime
-- [ ] **LIN-07**: Linux agent uses X11-compatible clipboard and keyboard tools
+- [ ] **BACK-09**: Backend accepts messages with key actions (not just text)
+- [ ] **BACK-10**: Backend forwards key actions to agent via WebSocket
 
-### Connection Resilience
+### Agent Support
 
-- [ ] **RES-01**: Mobile app queues transcriptions locally when offline
-- [ ] **RES-02**: Mobile app replays queued transcriptions on reconnect
-- [ ] **RES-03**: Mobile app implements exponential backoff reconnection (1s -> 30s max)
-- [ ] **RES-04**: Desktop agent implements exponential backoff reconnection (1s -> 30s max)
-- [ ] **RES-05**: Desktop agent responds to heartbeat ping with pong
-- [ ] **RES-06**: Desktop agent detects missed pongs and reconnects
-- [ ] **RES-07**: Backend implements message acknowledgment protocol
-- [ ] **RES-08**: Mobile app marks transcriptions as sent only after ACK received
-
-### Text Delivery
-
-- [ ] **DEL-01**: End-to-end latency from tap-stop to paste under 2 seconds (P95)
-- [ ] **DEL-02**: Desktop agent auto-pastes at current cursor position
-- [ ] **DEL-03**: Mobile app provides silent success (no confirmation dialogs)
-- [ ] **DEL-04**: Desktop agent falls back to clipboard-only if paste fails
-- [ ] **DEL-05**: Desktop agent logs paste events for debugging
-
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
-
-### Voice Commands
-
-- **CMD-01**: User can say "new line" to insert Enter key
-- **CMD-02**: User can say "tab" to insert Tab key
-- **CMD-03**: User can say "delete last word" to remove previous word
-- **CMD-04**: User can say "undo that" to reverse last transcription
-
-### Phrase Replacement
-
-- **PHR-01**: User can configure custom phrase replacements
-- **PHR-02**: User can map abbreviations to full text
-- **PHR-03**: User can save commonly used snippets
-- **PHR-04**: User can sync replacement dictionary across devices
-
-### Advanced Platforms
-
-- **PLT-01**: Linux Wayland support with ydotool
-- **PLT-02**: macOS support with Accessibility API
-- **PLT-03**: iOS support with SFSpeechRecognizer
-
-### Multi-Language
-
-- **LANG-01**: Support es-ES (Spain Spanish)
-- **LANG-02**: Support en-US (US English)
-- **LANG-03**: Support pt-BR (Brazilian Portuguese)
-- **LANG-04**: User can switch language from mobile app
+- [ ] **AGENT-01**: Windows agent executes key actions (Enter, Tab)
+- [ ] **AGENT-02**: Linux agent executes key actions (Enter, Tab)
 
 ## Out of Scope
 
-Explicitly excluded. Documented to prevent scope creep.
+Explicitly excluded for v1.1.
 
 | Feature | Reason |
 |---------|--------|
-| Authentication/authorization | Single user on private network, not needed for v1 |
-| Cloud deployment | Local network only for v1, adds complexity and cost |
-| Real-time streaming transcription | Higher complexity, current tap-to-stop is sufficient |
-| AI text formatting/cleanup | Adds LLM dependency, cost, latency - defer to v2 |
-| Meeting transcription | Different product category, out of scope |
-| Multi-user support | Single user for v1, multi-tenancy adds complexity |
-| Voice command parsing | Deferred to v2, needs design and testing |
-| Custom phrase replacement | Deferred to v2, needs configuration UI |
-| iOS app | Android only for v1, iOS adds development overhead |
-| Linux Wayland support | Deferred to v2, fragmented tooling needs research |
-| macOS support | Deferred to v2, different automation APIs |
-| Web Speech API | Inferior to native Android SpeechRecognizer |
-| Paid speech APIs | Free Android SpeechRecognizer sufficient for v1 |
+| Undo last transcription | Higher complexity, needs state tracking |
+| Delete last word | Requires cursor position awareness |
+| Custom phrase replacement | Needs configuration UI |
+| Voice command toggle (enable/disable) | Keep simple for v1.1 |
+| Multi-word command matching with fuzzy logic | Simple exact match for v1.1 |
 
 ## Traceability
 
@@ -135,62 +69,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BACK-01 | Phase 1 | Complete |
-| BACK-02 | Phase 1 | Complete |
-| BACK-03 | Phase 1 | Complete |
-| BACK-04 | Phase 1 | Complete |
-| BACK-05 | Phase 1 | Complete |
-| BACK-06 | Phase 1 | Complete |
-| BACK-07 | Phase 1 | Complete |
-| BACK-08 | Phase 1 | Complete |
-| RES-07 | Phase 1 | Complete |
-| WIN-01 | Phase 2 | Complete |
-| WIN-02 | Phase 2 | Complete |
-| WIN-03 | Phase 2 | Complete |
-| WIN-04 | Phase 2 | Complete |
-| WIN-05 | Phase 2 | Complete |
-| WIN-06 | Phase 2 | Complete |
-| WIN-07 | Phase 2 | Complete |
-| WIN-08 | Phase 2 | Complete |
-| RES-04 | Phase 2 | Complete |
-| RES-05 | Phase 2 | Complete |
-| RES-06 | Phase 2 | Complete |
-| DEL-02 | Phase 2 | Complete |
-| DEL-04 | Phase 2 | Complete |
-| DEL-05 | Phase 2 | Complete |
-| VOICE-01 | Phase 3 | Complete |
-| VOICE-02 | Phase 3 | Complete |
-| VOICE-03 | Phase 3 | Complete |
-| VOICE-04 | Phase 3 | Complete |
-| VOICE-05 | Phase 3 | Complete |
-| VOICE-06 | Phase 3 | Complete |
-| VOICE-07 | Phase 3 | Complete |
-| VOICE-08 | Phase 3 | Complete |
-| DEV-01 | Phase 3 | Complete |
-| DEV-02 | Phase 3 | Complete |
-| DEV-03 | Phase 3 | Complete |
-| DEV-04 | Phase 3 | Complete |
-| DEV-05 | Phase 3 | Complete |
-| DEV-06 | Phase 3 | Complete |
-| RES-01 | Phase 3 | Complete |
-| RES-02 | Phase 3 | Complete |
-| RES-03 | Phase 3 | Complete |
-| RES-08 | Phase 3 | Complete |
-| DEL-01 | Phase 3 | Complete |
-| DEL-03 | Phase 3 | Complete |
-| LIN-01 | Phase 4 | Complete |
-| LIN-02 | Phase 4 | Complete |
-| LIN-03 | Phase 4 | Complete |
-| LIN-04 | Phase 4 | Complete |
-| LIN-05 | Phase 4 | Complete |
-| LIN-06 | Phase 4 | Complete |
-| LIN-07 | Phase 4 | Complete |
+| PARSE-01 | — | Pending |
+| PARSE-02 | — | Pending |
+| PARSE-03 | — | Pending |
+| PARSE-04 | — | Pending |
+| PARSE-05 | — | Pending |
+| KEY-01 | — | Pending |
+| KEY-02 | — | Pending |
+| KEY-03 | — | Pending |
+| PUNCT-01 | — | Pending |
+| PUNCT-02 | — | Pending |
+| PUNCT-03 | — | Pending |
+| PUNCT-04 | — | Pending |
+| PUNCT-05 | — | Pending |
+| PUNCT-06 | — | Pending |
+| PUNCT-07 | — | Pending |
+| PUNCT-08 | — | Pending |
+| PUNCT-09 | — | Pending |
+| PUNCT-10 | — | Pending |
+| PUNCT-11 | — | Pending |
+| PUNCT-12 | — | Pending |
+| PUNCT-13 | — | Pending |
+| PUNCT-14 | — | Pending |
+| BACK-09 | — | Pending |
+| BACK-10 | — | Pending |
+| AGENT-01 | — | Pending |
+| AGENT-02 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 50
-- Mapped to phases: 50
-- Unmapped: 0
+- v1.1 requirements: 26
+- Mapped to phases: 0
+- Unmapped: 26
 
 ---
-*Requirements defined: 2026-02-06*
-*Last updated: 2026-02-11 after Phase 4 completion*
+*Requirements defined: 2026-02-12*
+*Last updated: 2026-02-12 after initial definition*
