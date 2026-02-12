@@ -69,38 +69,43 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PARSE-01 | — | Pending |
-| PARSE-02 | — | Pending |
-| PARSE-03 | — | Pending |
-| PARSE-04 | — | Pending |
-| PARSE-05 | — | Pending |
-| KEY-01 | — | Pending |
-| KEY-02 | — | Pending |
-| KEY-03 | — | Pending |
-| PUNCT-01 | — | Pending |
-| PUNCT-02 | — | Pending |
-| PUNCT-03 | — | Pending |
-| PUNCT-04 | — | Pending |
-| PUNCT-05 | — | Pending |
-| PUNCT-06 | — | Pending |
-| PUNCT-07 | — | Pending |
-| PUNCT-08 | — | Pending |
-| PUNCT-09 | — | Pending |
-| PUNCT-10 | — | Pending |
-| PUNCT-11 | — | Pending |
-| PUNCT-12 | — | Pending |
-| PUNCT-13 | — | Pending |
-| PUNCT-14 | — | Pending |
-| BACK-09 | — | Pending |
-| BACK-10 | — | Pending |
-| AGENT-01 | — | Pending |
-| AGENT-02 | — | Pending |
+| PARSE-01 | Phase 5 | Pending |
+| PARSE-02 | Phase 5 | Pending |
+| PARSE-03 | Phase 5 | Pending |
+| PARSE-04 | Phase 5 | Pending |
+| PARSE-05 | Phase 5 | Pending |
+| KEY-01 | Phase 6 | Pending |
+| KEY-02 | Phase 6 | Pending |
+| KEY-03 | Phase 5 | Pending |
+| PUNCT-01 | Phase 5 | Pending |
+| PUNCT-02 | Phase 5 | Pending |
+| PUNCT-03 | Phase 5 | Pending |
+| PUNCT-04 | Phase 5 | Pending |
+| PUNCT-05 | Phase 5 | Pending |
+| PUNCT-06 | Phase 5 | Pending |
+| PUNCT-07 | Phase 5 | Pending |
+| PUNCT-08 | Phase 5 | Pending |
+| PUNCT-09 | Phase 5 | Pending |
+| PUNCT-10 | Phase 5 | Pending |
+| PUNCT-11 | Phase 5 | Pending |
+| PUNCT-12 | Phase 5 | Pending |
+| PUNCT-13 | Phase 5 | Pending |
+| PUNCT-14 | Phase 5 | Pending |
+| BACK-09 | Phase 6 | Pending |
+| BACK-10 | Phase 6 | Pending |
+| AGENT-01 | Phase 6 | Pending |
+| AGENT-02 | Phase 6 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 26
-- Mapped to phases: 0
-- Unmapped: 26
+- Mapped to phases: 26
+- Unmapped: 0
+- Coverage: 100%
+
+**Phase Distribution:**
+- Phase 5: 20 requirements (Command Parser & Text Symbols)
+- Phase 6: 6 requirements (Key Actions Protocol)
 
 ---
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after initial definition*
+*Last updated: 2026-02-12 after roadmap creation*

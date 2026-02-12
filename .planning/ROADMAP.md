@@ -12,14 +12,21 @@ This roadmap delivers a voice-to-text system where users dictate on Android and 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
+### Milestone v1.0 (Completed)
+
 - [x] **Phase 1: Backend Foundation** - HTTP/WebSocket server that routes transcriptions to agents
 - [x] **Phase 2: Windows Desktop Agent** - Receives text via WebSocket, auto-pastes at cursor
 - [x] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
 - [x] **Phase 4: Linux Desktop Agent** - X11 agent support for Linux workstations
 
+### Milestone v1.1 (Active)
+
+- [ ] **Phase 5: Command Parser & Text Symbols** - Parse voice commands and replace with punctuation/symbols
+- [ ] **Phase 6: Key Actions Protocol** - Extend protocol for Enter/Tab keyboard simulation
+
 ## Phase Details
 
-### Phase 1: Backend Foundation
+### Phase 1: Backend Foundation (v1.0)
 **Goal**: Backend accepts transcriptions from mobile and routes them to the correct desktop agent via WebSocket
 **Depends on**: Nothing (first phase)
 **Requirements**: BACK-01, BACK-02, BACK-03, BACK-04, BACK-05, BACK-06, BACK-07, BACK-08, RES-07
@@ -38,7 +45,7 @@ Plans:
 - [x] 01-04-PLAN.md - HTTP routes for transcription and device listing
 - [x] 01-05-PLAN.md - Fastify integration and server entry point
 
-### Phase 2: Windows Desktop Agent
+### Phase 2: Windows Desktop Agent (v1.0)
 **Goal**: Windows PC receives text from backend and auto-pastes it at the current cursor position
 **Depends on**: Phase 1
 **Requirements**: WIN-01, WIN-02, WIN-03, WIN-04, WIN-05, WIN-06, WIN-07, WIN-08, RES-04, RES-05, RES-06, DEL-02, DEL-04, DEL-05
@@ -56,7 +63,7 @@ Plans:
 - [x] 02-03-PLAN.md - WebSocket connection with reconnection and entry point
 - [x] 02-04-PLAN.md - End-to-end verification and human testing
 
-### Phase 3: Mobile App + Voice
+### Phase 3: Mobile App + Voice (v1.0)
 **Goal**: User dictates on Android phone, text is transcribed and delivered to selected PC with full resilience
 **Depends on**: Phase 2
 **Requirements**: VOICE-01, VOICE-02, VOICE-03, VOICE-04, VOICE-05, VOICE-06, VOICE-07, VOICE-08, DEV-01, DEV-02, DEV-03, DEV-04, DEV-05, DEV-06, RES-01, RES-02, RES-03, RES-08, DEL-01, DEL-03
@@ -78,7 +85,7 @@ Plans:
 - [x] 03-07-PLAN.md - App integration and Android configuration
 - [x] 03-08-PLAN.md - End-to-end verification on device
 
-### Phase 4: Linux Desktop Agent
+### Phase 4: Linux Desktop Agent (v1.0)
 **Goal**: Linux workstations (X11) can receive and auto-paste text like Windows agents
 **Depends on**: Phase 2
 **Requirements**: LIN-01, LIN-02, LIN-03, LIN-04, LIN-05, LIN-06, LIN-07
@@ -95,10 +102,34 @@ Plans:
 - [x] 04-03-PLAN.md - WebSocket connection with reconnection and entry point
 - [x] 04-04-PLAN.md - End-to-end verification on Linux desktop
 
+### Phase 5: Command Parser & Text Symbols (v1.1)
+**Goal**: User can dictate punctuation and symbols using Spanish voice commands that are replaced with their text equivalents
+**Depends on**: Phase 3
+**Requirements**: PARSE-01, PARSE-02, PARSE-03, PARSE-04, PARSE-05, KEY-03, PUNCT-01, PUNCT-02, PUNCT-03, PUNCT-04, PUNCT-05, PUNCT-06, PUNCT-07, PUNCT-08, PUNCT-09, PUNCT-10, PUNCT-11, PUNCT-12, PUNCT-13, PUNCT-14
+**Success Criteria** (what must be TRUE):
+  1. User says "punto" and "." appears in transcription at cursor position
+  2. User says "coma dos puntos enter" and ",:" appears (mixed commands and text work correctly)
+  3. User says "arroba ejemplo punto com" and "@ejemplo.com" appears (compound commands work)
+  4. Command detection is case-insensitive (both "Punto" and "punto" produce ".")
+  5. User says "espacio" and an explicit space character is inserted
+**Plans**: Not yet planned
+
+### Phase 6: Key Actions Protocol (v1.1)
+**Goal**: User can insert keyboard actions (Enter, Tab) via voice commands, executed by agents as actual key presses
+**Depends on**: Phase 5
+**Requirements**: KEY-01, KEY-02, BACK-09, BACK-10, AGENT-01, AGENT-02
+**Success Criteria** (what must be TRUE):
+  1. User says "nueva linea" or "enter" and cursor moves to next line in target application
+  2. User says "tabulador" or "tab" and Tab key is pressed in target application
+  3. Backend accepts and forwards messages containing key actions (not just text strings)
+  4. Windows agent executes received key actions using robotjs
+  5. Linux agent executes received key actions using xdotool
+**Plans**: Not yet planned
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -106,6 +137,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
 | 4. Linux Desktop Agent | 4/4 | Complete | 2026-02-11 |
+| 5. Command Parser & Text Symbols | 0/? | Not Started | — |
+| 6. Key Actions Protocol | 0/? | Not Started | — |
 
 ---
 *Roadmap created: 2026-02-06*
+*Last updated: 2026-02-12 (added v1.1 phases)*
