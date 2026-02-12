@@ -112,7 +112,12 @@ Plans:
   3. User says "arroba ejemplo punto com" and "@ejemplo.com" appears (compound commands work)
   4. Command detection is case-insensitive (both "Punto" and "punto" produce ".")
   5. User says "espacio" and an explicit space character is inserted
-**Plans**: Not yet planned
+**Plans**: 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md - Command parser with TDD (pure function + test suite)
+- [ ] 05-02-PLAN.md - Hook integration and visual feedback
+- [ ] 05-03-PLAN.md - End-to-end verification on Android device
 
 ### Phase 6: Key Actions Protocol (v1.1)
 **Goal**: User can insert keyboard actions (Enter, Tab) via voice commands, executed by agents as actual key presses
@@ -137,9 +142,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
 | 4. Linux Desktop Agent | 4/4 | Complete | 2026-02-11 |
-| 5. Command Parser & Text Symbols | 0/? | Not Started | — |
+| 5. Command Parser & Text Symbols | 0/3 | Planning Complete | — |
 | 6. Key Actions Protocol | 0/? | Not Started | — |
 
 ---
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-02-12 (added v1.1 phases)*
+*Last updated: 2026-02-12 (Phase 5 planning complete)*
