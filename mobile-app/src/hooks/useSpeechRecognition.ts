@@ -9,6 +9,7 @@ import {
   stopListening,
   cleanupSpeechListeners,
 } from '../services/speech';
+import { parseCommands } from '../services/commandParser';
 
 interface UseSpeechRecognitionResult {
   state: RecordingState;
@@ -30,7 +31,7 @@ interface UseSpeechRecognitionResult {
  *
  * Flow:
  * 1. User taps to start -> starts listening
- * 2. User speaks -> liveText updates in real-time
+ * 2. User speaks -> liveText updates in real-time (with command parsing)
  * 3. Either:
  *    a. User taps stop -> captures final text, goes to editing
  *    b. Android detects silence -> automatically stops, captures final text, goes to editing
@@ -49,10 +50,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
   const [isAvailable, setIsAvailable] = useState(true);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number>(0);
   const liveTextRef = useRef<string>('');
   const isRecordingRef = useRef<boolean>(false);
   const hasStoppedRef = useRef<boolean>(false);
+
+  // Silence timeout in milliseconds - show error if no speech detected
+  const SILENCE_TIMEOUT_MS = 5000;
 
   // Check permission and availability on mount
   useEffect(() => {
@@ -64,6 +69,35 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     };
     checkSetup();
   }, []);
+
+  // Clear silence timer
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+  }, []);
+
+  // Reset silence timer - called when we receive partial results
+  const resetSilenceTimer = useCallback(() => {
+    clearSilenceTimer();
+    if (isRecordingRef.current && !hasStoppedRef.current) {
+      silenceTimerRef.current = setTimeout(() => {
+        console.log('[Speech] Silence timeout - no speech detected');
+        if (isRecordingRef.current && !hasStoppedRef.current && !liveTextRef.current.trim()) {
+          setError({ code: 6, message: 'No se detecto voz. Habla mas fuerte.' });
+          stopListening().catch(() => {});
+          hasStoppedRef.current = true;
+          isRecordingRef.current = false;
+          setState('idle');
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+        }
+      }, SILENCE_TIMEOUT_MS);
+    }
+  }, [clearSilenceTimer]);
 
   // Finalize recording - capture text and go to editing
   const finalizeRecording = useCallback(() => {
@@ -77,21 +111,26 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     setState(text ? 'editing' : 'idle');
     isRecordingRef.current = false;
 
-    // Stop timer
+    // Stop timers
+    clearSilenceTimer();
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  }, []);
+  }, [clearSilenceTimer]);
 
   // Setup speech listeners
   useEffect(() => {
     setupSpeechListeners(
-      // onPartialResults - live text updates
+      // onPartialResults - live text updates with command parsing
       (text) => {
         console.log('[Speech] Partial result:', text);
-        liveTextRef.current = text;
-        setLiveText(text);
+        // Parse voice commands (punto -> ., coma -> ,, etc.) in real-time
+        const parsed = parseCommands(text);
+        liveTextRef.current = parsed;
+        setLiveText(parsed);
+        // Reset silence timer - user is speaking
+        resetSilenceTimer();
       },
       // onError
       (speechError) => {
@@ -100,12 +139,17 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
         // Code 6 = no speech, Code 7 = no match
         // These mean Android stopped listening without getting useful input
         if (speechError.code === 6 || speechError.code === 7) {
-          // If we have some text, use it; otherwise just go back to idle
-          finalizeRecording();
-          return;
+          // If we have some text, use it and go to editing
+          if (liveTextRef.current.trim()) {
+            finalizeRecording();
+            return;
+          }
+          // No text captured - show error and go to idle
+          setError(speechError);
+        } else {
+          setError(speechError);
         }
 
-        setError(speechError);
         setState('idle');
         isRecordingRef.current = false;
         hasStoppedRef.current = true;
@@ -124,6 +168,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
           // Longer delay to ensure we capture the final partial result
           // Android sometimes sends one more partial result after stopping
           setTimeout(() => {
+            // If no text was captured, show "no speech detected" error
+            if (!liveTextRef.current.trim()) {
+              setError({ code: 6, message: 'No se detecto voz. Habla mas fuerte.' });
+            }
             finalizeRecording();
           }, 300);
         }
@@ -132,12 +180,13 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
 
     return () => {
       cleanupSpeechListeners();
+      clearSilenceTimer();
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
-  }, [finalizeRecording]);
+  }, [finalizeRecording, resetSilenceTimer, clearSilenceTimer]);
 
   // Start recording
   const startRecording = useCallback(async () => {
@@ -168,6 +217,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
         setRecordingDuration(elapsed);
       }, 1000);
 
+      // Start silence detection timer
+      resetSilenceTimer();
+
       await startListening();
     } catch (err: any) {
       console.error('[Speech] Start error:', err);
@@ -181,12 +233,13 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
         timerRef.current = null;
       }
     }
-  }, [hasPermission]);
+  }, [hasPermission, resetSilenceTimer]);
 
   // Stop recording manually
   const stopRecording = useCallback(async () => {
     try {
       console.log('[Speech] Manual stop');
+      clearSilenceTimer();
       await stopListening();
 
       // Longer delay to capture any final partial result
@@ -198,7 +251,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       setError({ code: -1, message: err.message || 'Error al detener grabacion' });
       finalizeRecording();
     }
-  }, [finalizeRecording]);
+  }, [finalizeRecording, clearSilenceTimer]);
 
   // Clear error
   const clearError = useCallback(() => {
