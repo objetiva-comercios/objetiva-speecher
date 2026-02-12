@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 ## Current Position
 
 Phase: 5 of 6 (Command Parser & Text Symbols)
-Plan: 1 of 3 (estimate)
-Status: Plan 05-01 complete
-Last activity: 2026-02-12 — Completed 05-01-PLAN.md (Command Parser TDD)
+Plan: 2 of 3 (estimate)
+Status: Plan 05-02 complete
+Last activity: 2026-02-12 — Completed 05-02-PLAN.md (Parser Integration & Visual Feedback)
 
-Progress: [#####---------------] 25% (v1.0 complete, Phase 5 Plan 1 complete)
+Progress: [######------------------] 30% (v1.0 complete, Phase 5 Plans 1-2 complete)
 
 ## Milestone v1.1 Goals
 
@@ -51,6 +51,8 @@ Progress: [#####---------------] 25% (v1.0 complete, Phase 5 Plan 1 complete)
 | 2026-02-12 | \u0001/\u0002 markers for bracket types | Smart space normalization |
 | 2026-02-12 | NBSP placeholder for espacio | Prevents space collapse |
 | 2026-02-12 | Commands sorted by length | Longest-match-first |
+| 2026-02-12 | Parse in onPartialResults | Real-time feedback as user speaks |
+| 2026-02-12 | 180ms pulse for visual feedback | Brief, non-disruptive confirmation |
 
 ## Performance Metrics
 
@@ -72,20 +74,23 @@ Progress: [#####---------------] 25% (v1.0 complete, Phase 5 Plan 1 complete)
 - 2026-02-12: Key actions (Enter, Tab) deferred to Phase 6 (needs protocol work)
 - 2026-02-12: Implemented parseCommands with 23 command mappings
 - 2026-02-12: Used TDD methodology (63 tests)
+- 2026-02-12: Integrated parser into onPartialResults for real-time feedback
+- 2026-02-12: Added 180ms blue pulse visual feedback for conversions
 
 ### Active TODOs
 - [x] Plan Phase 5 (command parser implementation)
 - [x] Define command vocabulary and mappings
 - [x] Design parser API in mobile app
-- [ ] Integrate parser into speech recognition hook
-- [ ] Add visual feedback for command conversions
+- [x] Integrate parser into speech recognition hook
+- [x] Add visual feedback for command conversions
+- [ ] Manual testing on Android device (Plan 05-03)
 
 ### Blockers
 None.
 
 ## Session Continuity
 
-Last session: 2026-02-12T18:03:35Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-02-12T18:17:27Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
-Next action: Plan 05-02 (parser integration) or continue with remaining Phase 5 plans
+Next action: Plan 05-03 (manual testing checkpoint) or continue with remaining Phase 5 plans
