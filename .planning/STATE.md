@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 ## Current Position
 
 Phase: 6 of 6 (Key Actions Protocol)
-Plan: 1 of 3 (estimate)
-Status: Plan 06-01 complete
-Last activity: 2026-02-13 — Completed 06-01-PLAN.md (Types Protocol Extension)
+Plan: 3 of 5 (Backend Protocol Support)
+Status: Plan 06-03 complete
+Last activity: 2026-02-13 — Completed 06-03-PLAN.md (Backend Protocol Support)
 
-Progress: [########----------------] 35% (v1.0 complete, Phase 5 Plans 1-2 complete, Phase 6 Plan 1 complete)
+Progress: [##########--------------] 45% (v1.0 complete, Phase 5 Plans 1-2 complete, Phase 6 Plans 1,3,4,5 complete)
 
 ## Milestone v1.1 Goals
 
@@ -56,6 +56,10 @@ Progress: [########----------------] 35% (v1.0 complete, Phase 5 Plans 1-2 compl
 | 2026-02-13 | text field optional on ServerMessage | Forward-compatible protocol evolution |
 | 2026-02-13 | payload field optional | Backward-compatible gradual rollout |
 | 2026-02-13 | Segment discriminated union | Type-safe exhaustive pattern matching |
+| 2026-02-13 | xdotool uses X11 keysym names | enter -> Return, tab -> Tab |
+| 2026-02-13 | 50ms delay between segments | Reliable X11 event processing |
+| 2026-02-13 | oneOf schema validation for Segments | Validates discriminated union in Fastify |
+| 2026-02-13 | Pass-through pattern for payload | Backend stores/forwards, agents interpret |
 
 ## Performance Metrics
 
@@ -81,6 +85,10 @@ Progress: [########----------------] 35% (v1.0 complete, Phase 5 Plans 1-2 compl
 - 2026-02-12: Added 180ms blue pulse visual feedback for conversions
 - 2026-02-13: Added KeyAction and Segment types to all 4 packages
 - 2026-02-13: Made text optional, added payload field for Segment[] in ServerMessage
+- 2026-02-13: Linux agent executeKeyAction uses xdotool with X11 keysym names
+- 2026-02-13: Linux agent processPayload handles Segment[] with 50ms delay
+- 2026-02-13: Backend validates Segment[] payload with oneOf schema
+- 2026-02-13: Backend forwards payload unchanged to agents (pass-through pattern)
 
 ### Active TODOs
 - [x] Plan Phase 5 (command parser implementation)
@@ -91,14 +99,16 @@ Progress: [########----------------] 35% (v1.0 complete, Phase 5 Plans 1-2 compl
 - [ ] Manual testing on Android device (Plan 05-03)
 - [x] Add Segment/KeyAction types to all packages (Plan 06-01)
 - [ ] Implement segmentText() in mobile app (Plan 06-02)
-- [ ] Add payload processing in agents (Plan 06-03)
+- [x] Update backend to accept/forward payload (Plan 06-03)
+- [x] Add payload processing in Windows agent (Plan 06-04)
+- [x] Add payload processing in Linux agent (Plan 06-05)
 
 ### Blockers
 None.
 
 ## Session Continuity
 
-Last session: 2026-02-13T03:48:40Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-02-13T11:57:30Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
-Next action: Plan 06-02 (Mobile App Segmenter) or Plan 06-03 (Agent Payload Processing)
+Next action: Plan 06-02 (Mobile App Segmenter) - final remaining plan for Phase 6
