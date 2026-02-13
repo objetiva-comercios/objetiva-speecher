@@ -2,11 +2,12 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getAgent } from '../services/registry.js';
 import { enqueue } from '../services/queue.js';
 import { sendAndWaitForAck } from '../websocket/ack.js';
-import type { ApiResponse, ServerMessage } from '../types/messages.js';
+import type { ApiResponse, ServerMessage, Segment } from '../types/messages.js';
 
 interface TranscriptionBody {
   deviceId: string;
-  text: string;
+  payload: Segment[];  // Array of text/key segments
+  text?: string;       // Deprecated: for backwards compatibility
 }
 
 /**
@@ -22,16 +23,38 @@ export async function transcriptionRoute(fastify: FastifyInstance): Promise<void
       schema: {
         body: {
           type: 'object',
-          required: ['deviceId', 'text'],
+          required: ['deviceId', 'payload'],
           properties: {
             deviceId: { type: 'string', minLength: 1 },
-            text: { type: 'string' },
+            payload: {
+              type: 'array',
+              items: {
+                type: 'object',
+                oneOf: [
+                  {
+                    properties: {
+                      type: { const: 'text' },
+                      value: { type: 'string' },
+                    },
+                    required: ['type', 'value'],
+                  },
+                  {
+                    properties: {
+                      type: { const: 'key' },
+                      key: { enum: ['enter', 'tab'] },
+                    },
+                    required: ['type', 'key'],
+                  },
+                ],
+              },
+            },
+            text: { type: 'string' },  // Deprecated
           },
         },
       },
     },
     async (request: FastifyRequest<{ Body: TranscriptionBody }>, reply: FastifyReply) => {
-      const { deviceId, text } = request.body;
+      const { deviceId, payload } = request.body;
 
       // Validate deviceId (redundant with Fastify schema, but explicit for clarity)
       // Note: Fastify schema already validates minLength:1, so this is a safety net
@@ -49,7 +72,7 @@ export async function transcriptionRoute(fastify: FastifyInstance): Promise<void
       }
 
       try {
-        const result = await routeTranscription(deviceId, text, request.log);
+        const result = await routeTranscription(deviceId, payload, request.log);
         return reply.code(200).send(result);
       } catch (error) {
         request.log.error({ error, deviceId }, 'Transcription routing failed');
@@ -71,7 +94,7 @@ export async function transcriptionRoute(fastify: FastifyInstance): Promise<void
  */
 async function routeTranscription(
   deviceId: string,
-  text: string,
+  payload: Segment[],
   logger: FastifyInstance['log']
 ): Promise<ApiResponse> {
   const messageId = crypto.randomUUID();
@@ -82,14 +105,14 @@ async function routeTranscription(
   if (!agent) {
     // Agent offline - queue the message
     logger.info({ deviceId, messageId }, 'Agent offline, queuing message');
-    return queueMessage(deviceId, messageId, text, timestamp);
+    return queueMessage(deviceId, messageId, payload, timestamp);
   }
 
   // Agent online - send and wait for ACK
   const serverMessage: ServerMessage = {
     type: 'transcription',
     id: messageId,
-    text,
+    payload,
     timestamp,
   };
 
@@ -106,7 +129,7 @@ async function routeTranscription(
     // ACK timeout - queue for retry
     // Per research: ACK_TIMEOUT means agent might be unresponsive
     logger.warn({ deviceId, messageId }, 'ACK timeout, queuing for retry');
-    return queueMessage(deviceId, messageId, text, timestamp);
+    return queueMessage(deviceId, messageId, payload, timestamp);
   }
 }
 
@@ -116,10 +139,10 @@ async function routeTranscription(
 function queueMessage(
   deviceId: string,
   messageId: string,
-  text: string,
+  payload: Segment[],
   timestamp: number
 ): ApiResponse {
-  const result = enqueue(deviceId, { id: messageId, text, timestamp });
+  const result = enqueue(deviceId, { id: messageId, payload, timestamp });
 
   if (result.success) {
     return {
