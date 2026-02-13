@@ -1,3 +1,11 @@
+// Key action types for Enter/Tab simulation
+export type KeyAction = 'enter' | 'tab';
+
+// Segment: discriminated union for type-safe payload handling
+export type Segment =
+  | { type: 'text'; value: string }
+  | { type: 'key'; key: KeyAction };
+
 // Recording flow states
 export type RecordingState = 'idle' | 'recording' | 'editing';
 
@@ -7,12 +15,13 @@ export interface Device {
   isOnline: boolean;
 }
 
-// Queued transcription (persisted in Preferences)
-export interface QueuedTranscription {
+// History item (persisted in Preferences)
+export interface HistoryItem {
   id: string;
   deviceId: string;
   text: string;
   timestamp: number;
+  sent: boolean;  // Was successfully sent at least once
 }
 
 // Connection status

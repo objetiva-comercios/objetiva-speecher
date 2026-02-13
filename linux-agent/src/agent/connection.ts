@@ -82,10 +82,20 @@ export class AgentConnection {
       const msg = JSON.parse(data.toString()) as ServerMessage;
 
       if (msg.type === 'transcription') {
-        logger.info({ id: msg.id, textLength: msg.text.length }, 'Received transcription');
+        // Support both old (text) and new (payload) formats
+        // TODO: Phase 6 Plan 03 will add payload processing
+        const text = msg.text ?? '';
+        if (!text) {
+          logger.warn({ id: msg.id }, 'No text in transcription (payload-only not yet supported)');
+          const ack: AgentMessage = { type: 'ack', id: msg.id };
+          this.ws?.send(JSON.stringify(ack));
+          return;
+        }
+
+        logger.info({ id: msg.id, textLength: text.length }, 'Received transcription');
 
         // Process: paste the text (LIN-03, LIN-04, LIN-05)
-        const result = await pasteText(msg.text);
+        const result = await pasteText(text);
 
         if (result.success) {
           logger.info({ id: msg.id, method: result.method }, 'Paste succeeded');

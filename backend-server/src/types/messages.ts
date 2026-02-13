@@ -1,6 +1,14 @@
+// Key action types for Enter/Tab simulation
+export type KeyAction = 'enter' | 'tab';
+
+// Segment: discriminated union for type-safe payload handling
+export type Segment =
+  | { type: 'text'; value: string }
+  | { type: 'key'; key: KeyAction };
+
 // Server -> Agent messages
 export type ServerMessage =
-  | { type: 'transcription'; id: string; text: string; timestamp: number }
+  | { type: 'transcription'; id: string; text?: string; payload?: Segment[]; timestamp: number }
 
 // Agent -> Server messages
 export type AgentMessage =
@@ -10,7 +18,8 @@ export type AgentMessage =
 // Internal: queued messages for offline agents
 export interface QueuedMessage {
   id: string;
-  text: string;
+  text?: string;
+  payload?: Segment[];
   timestamp: number;
 }
 

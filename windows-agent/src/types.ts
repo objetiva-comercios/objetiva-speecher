@@ -1,8 +1,17 @@
+// Key action types for Enter/Tab simulation
+export type KeyAction = 'enter' | 'tab';
+
+// Segment: discriminated union for type-safe payload handling
+export type Segment =
+  | { type: 'text'; value: string }
+  | { type: 'key'; key: KeyAction };
+
 // Messages from backend (receive)
 export type ServerMessage = {
   type: 'transcription';
   id: string;
-  text: string;
+  text?: string;
+  payload?: Segment[];
   timestamp: number;
 };
 
