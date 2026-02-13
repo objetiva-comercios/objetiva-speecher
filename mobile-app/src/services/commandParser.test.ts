@@ -67,8 +67,8 @@ describe('parseCommands', () => {
       expect(parseCommands('numeral')).toBe('#');
     });
 
-    it('converts dolar to dollar sign', () => {
-      expect(parseCommands('dolar')).toBe('$');
+    it('converts pesos to dollar sign', () => {
+      expect(parseCommands('pesos')).toBe('$');
     });
 
     it('converts porcentaje to percent sign', () => {
@@ -122,6 +122,10 @@ describe('parseCommands', () => {
     it('converts cierra comillas to close quote', () => {
       expect(parseCommands('cierra comillas')).toBe('"');
     });
+
+    it('converts single word comillas to quote', () => {
+      expect(parseCommands('comillas')).toBe('"');
+    });
   });
 
   describe('paired symbols - single quotes', () => {
@@ -131,6 +135,13 @@ describe('parseCommands', () => {
 
     it('converts cierra comilla simple to close single quote', () => {
       expect(parseCommands('cierra comilla simple')).toBe("'");
+    });
+
+    it('converts comilla simple variants to single quote', () => {
+      expect(parseCommands('comilla simple')).toBe("'");
+      expect(parseCommands('comillas simple')).toBe("'");
+      expect(parseCommands('comilla simples')).toBe("'");
+      expect(parseCommands('comillas simples')).toBe("'");
     });
   });
 
@@ -223,6 +234,22 @@ describe('parseCommands', () => {
     it('preserves non-command word after literal', () => {
       expect(parseCommands('literal hola')).toBe('hola');
     });
+
+    it('handles Android pre-converted punctuation after literal', () => {
+      // Android may convert "punto" to "." before our parser runs
+      expect(parseCommands('literal.')).toBe('punto');
+      expect(parseCommands('literal,')).toBe('coma');
+    });
+  });
+
+  describe('hashtag spacing', () => {
+    it('removes space after hashtag', () => {
+      expect(parseCommands('hashtag tema')).toBe('#tema');
+    });
+
+    it('handles numeral without extra space', () => {
+      expect(parseCommands('numeral uno')).toBe('#uno');
+    });
   });
 
   describe('space normalization', () => {
@@ -262,6 +289,52 @@ describe('parseCommands', () => {
 
     it('inserts explicit spaces between words', () => {
       expect(parseCommands('hola espacio espacio adios')).toBe('hola  adios');
+    });
+  });
+
+  describe('Android SR variants', () => {
+    it('converts sierra parentesis to close paren (Android SR variant)', () => {
+      expect(parseCommands('sierra parentesis')).toBe(')');
+    });
+
+    it('converts Sierra paréntesis with accent (Android SR variant)', () => {
+      expect(parseCommands('Sierra paréntesis')).toBe(')');
+    });
+
+    it('wraps content with sierra variant', () => {
+      expect(parseCommands('abre parentesis hola sierra parentesis')).toBe('(hola)');
+    });
+
+    it('converts sierra comillas to close quote (Android SR variant)', () => {
+      expect(parseCommands('sierra comillas')).toBe('"');
+    });
+
+    it('converts sierra llave to close brace (Android SR variant)', () => {
+      expect(parseCommands('sierra llave')).toBe('}');
+    });
+
+    it('converts sierra corchete to close bracket (Android SR variant)', () => {
+      expect(parseCommands('sierra corchete')).toBe(']');
+    });
+
+    it('converts interrogación with accent (Android SR variant)', () => {
+      expect(parseCommands('interrogación')).toBe('?');
+    });
+
+    it('converts exclamación with accent (Android SR variant)', () => {
+      expect(parseCommands('exclamación')).toBe('!');
+    });
+
+    it('converts guión with accent (Android SR variant)', () => {
+      expect(parseCommands('guión')).toBe('-');
+    });
+
+    it('converts dólar with accent (Android SR variant)', () => {
+      expect(parseCommands('dólar')).toBe('$');
+    });
+
+    it('converts abre paréntesis with accent (Android SR variant)', () => {
+      expect(parseCommands('abre paréntesis')).toBe('(');
     });
   });
 

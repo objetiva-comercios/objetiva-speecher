@@ -20,17 +20,21 @@ interface CommandDef {
  */
 const COMMANDS: CommandDef[] = [
   // Multi-word commands FIRST (longest patterns)
-  { patterns: ['signo de interrogacion', 'interrogacion'], output: '?' },
-  { patterns: ['signo de exclamacion', 'exclamacion'], output: '!' },
-  { patterns: ['cierra comilla simple'], output: "\u0002'" },
-  { patterns: ['abre comilla simple'], output: "\u0001'" },
-  { patterns: ['cierra parentesis'], output: ')' },
-  { patterns: ['abre parentesis'], output: '\u0001(' },
-  { patterns: ['cierra corchete'], output: ']' },
+  // Android SR variants: "Sierra" for "cierra", accented for non-accented
+  { patterns: ['signo de interrogacion', 'signo de interrogación', 'interrogacion', 'interrogación'], output: '?' },
+  { patterns: ['signo de exclamacion', 'signo de exclamación', 'exclamacion', 'exclamación'], output: '!' },
+  // Comilla simple variants: singular/plural combinations
+  { patterns: ['cierra comilla simple', 'sierra comilla simple', 'cierra comillas simple', 'sierra comillas simple', 'cierra comilla simples', 'sierra comilla simples', 'cierra comillas simples', 'sierra comillas simples'], output: "\u0002'" },
+  { patterns: ['abre comilla simple', 'abre comillas simple', 'abre comilla simples', 'abre comillas simples'], output: "\u0001'" },
+  // Single word "comilla simple" variants (without abre/cierra)
+  { patterns: ['comilla simple', 'comillas simple', 'comilla simples', 'comillas simples'], output: "'" },
+  { patterns: ['cierra parentesis', 'sierra parentesis', 'cierra paréntesis', 'sierra paréntesis'], output: ')' },
+  { patterns: ['abre parentesis', 'abre paréntesis'], output: '\u0001(' },
+  { patterns: ['cierra corchete', 'sierra corchete'], output: ']' },
   { patterns: ['abre corchete'], output: '\u0001[' },
-  { patterns: ['cierra comillas'], output: '\u0002"' },
+  { patterns: ['cierra comillas', 'sierra comillas'], output: '\u0002"' },
   { patterns: ['abre comillas'], output: '\u0001"' },
-  { patterns: ['cierra llave'], output: '}' },
+  { patterns: ['cierra llave', 'sierra llave'], output: '}' },
   { patterns: ['abre llave'], output: '\u0001{' },
   { patterns: ['punto y coma'], output: ';' },
   { patterns: ['dos puntos'], output: ':' },
@@ -38,11 +42,12 @@ const COMMANDS: CommandDef[] = [
 
   // Single-word commands AFTER multi-word
   { patterns: ['porcentaje'], output: '%' },
-  { patterns: ['hashtag', 'numeral'], output: '#' },
+  { patterns: ['hashtag', 'numeral'], output: '\u0003#' }, // \u0003 marker for # to remove space after
+  { patterns: ['comillas'], output: '"' }, // Single word "comillas" -> "
   { patterns: ['espacio'], output: '\u00A0' }, // Non-breaking space placeholder
   { patterns: ['punto'], output: '.' },
-  { patterns: ['guion'], output: '-' },
-  { patterns: ['dolar'], output: '$' },
+  { patterns: ['guion', 'guión'], output: '-' },
+  { patterns: ['pesos', 'dolar', 'dólar'], output: '$' }, // pesos is primary, dolar/dólar as aliases
   { patterns: ['coma'], output: ',' },
   { patterns: ['arroba'], output: '@' },
 ];
@@ -79,10 +84,25 @@ export function parseCommands(text: string): string {
   let processed = text;
 
   // Step 1: Handle escape sequences "literal X" - protect words from conversion
-  const escapeRegex = new RegExp(`\\b${ESCAPE_KEYWORD}\\s+(\\S+)`, 'gi');
+  // Also handle "literal." "literal," etc. where Android already converted the punctuation
+  const escapeRegex = new RegExp(`\\b${ESCAPE_KEYWORD}[\\s]*(\\S+)`, 'gi');
   const escapes: string[] = [];
+
+  // Reverse mapping: if Android converted "punto" to ".", convert back to word
+  const punctToWord: Record<string, string> = {
+    '.': 'punto', ',': 'coma', ':': 'dos puntos', ';': 'punto y coma',
+    '?': 'interrogacion', '!': 'exclamacion', '-': 'guion',
+    '@': 'arroba', '#': 'hashtag', '$': 'pesos', '%': 'porcentaje',
+    '(': 'abre parentesis', ')': 'cierra parentesis',
+    '[': 'abre corchete', ']': 'cierra corchete',
+    '{': 'abre llave', '}': 'cierra llave',
+    '"': 'comillas', "'": 'comilla simple'
+  };
+
   processed = processed.replace(escapeRegex, (_, word) => {
-    escapes.push(word);
+    // If word is punctuation, convert to the Spanish word
+    const actualWord = punctToWord[word] || word;
+    escapes.push(actualWord);
     return `${ESC_PLACEHOLDER}${escapes.length - 1}\u0000`;
   });
 
@@ -125,6 +145,9 @@ export function parseCommands(text: string): string {
 
   // Handle .com specifically - remove space before the dot
   processed = processed.replace(/(?: )+\.com/g, '.com');
+
+  // Handle # (\u0003 prefix): remove space after hashtag
+  processed = processed.replace(/\u0003# */g, '#');
 
   // Step 5: Convert non-breaking space placeholders to regular spaces
   // Collapse regular-space + NBSP or NBSP + regular-space to just NBSP
