@@ -129,7 +129,14 @@ Plans:
   3. Backend accepts and forwards messages containing key actions (not just text strings)
   4. Windows agent executes received key actions using robotjs
   5. Linux agent executes received key actions using xdotool
-**Plans**: Not yet planned
+**Plans**: 5 plans
+
+Plans:
+- [ ] 06-01-PLAN.md - Types protocol extension (Segment, KeyAction types in all packages)
+- [ ] 06-02-PLAN.md - Mobile parser extension and API payload format
+- [ ] 06-03-PLAN.md - Backend protocol support for payload messages
+- [ ] 06-04-PLAN.md - Windows agent key action execution
+- [ ] 06-05-PLAN.md - Linux agent key action execution
 
 ## Progress
 
@@ -142,9 +149,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
 | 4. Linux Desktop Agent | 4/4 | Complete | 2026-02-11 |
-| 5. Command Parser & Text Symbols | 0/3 | Planning Complete | — |
-| 6. Key Actions Protocol | 0/? | Not Started | — |
+| 5. Command Parser & Text Symbols | 0/3 | Planning Complete | - |
+| 6. Key Actions Protocol | 0/5 | Planning Complete | - |
 
 ---
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-02-12 (Phase 5 planning complete)*
+*Last updated: 2026-02-13 (Phase 6 planning complete)*
