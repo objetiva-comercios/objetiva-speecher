@@ -5,6 +5,7 @@ import { useDeviceList } from './hooks/useDeviceList';
 import { useSpeechRecognition } from './hooks/useSpeechRecognition';
 import { useQueue } from './hooks/useQueue';
 import { getApiClient, isApiClientInitialized } from './services/api';
+import { parseToSegments } from './services/commandParser';
 
 import { DeviceSelector } from './components/DeviceSelector';
 import { StatusIndicator } from './components/StatusIndicator';
@@ -46,7 +47,6 @@ function App() {
     state: recordingState,
     liveText,
     finalText,
-    error: speechError,
     recordingDuration,
     startRecording,
     stopRecording,
@@ -67,7 +67,9 @@ function App() {
     setIsSending(true);
     try {
       const api = getApiClient();
-      const response = await api.sendTranscription(selectedDevice, finalText.trim());
+      // Parse text into segments (text and key actions)
+      const segments = parseToSegments(finalText);
+      const response = await api.sendTranscription(selectedDevice, segments);
 
       if (response.success) {
         setShowSuccess(true);
@@ -157,7 +159,6 @@ function App() {
           liveText={liveText}
           isRecording={recordingState === 'recording'}
           isEditing={recordingState === 'editing'}
-          error={speechError}
           onTextChange={setFinalText}
           onSend={handleSend}
           onCancel={handleCancel}

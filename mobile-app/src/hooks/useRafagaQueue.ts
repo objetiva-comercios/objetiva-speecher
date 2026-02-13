@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getApiClient, isApiClientInitialized } from '../services/api';
+import { parseToSegments } from '../services/commandParser';
 
 export interface RafagaSegment {
   id: number;
@@ -50,7 +51,9 @@ export function useRafagaQueue({ deviceId, enabled }: UseRafagaQueueOptions): Us
 
     try {
       const api = getApiClient();
-      const response = await api.sendTranscription(deviceId, segment.text);
+      // Parse text into segments (text and key actions)
+      const parsedSegments = parseToSegments(segment.text);
+      const response = await api.sendTranscription(deviceId, parsedSegments);
 
       if (response.success) {
         // Mark as sent

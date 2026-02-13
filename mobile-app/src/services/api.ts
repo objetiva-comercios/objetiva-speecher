@@ -1,4 +1,5 @@
-import type { ApiResponse, DevicesResponse, QueuedTranscription } from '../types';
+import type { ApiResponse, DevicesResponse, QueuedTranscription, Segment } from '../types';
+import { parseToSegments } from './commandParser';
 
 /**
  * API client for backend communication.
@@ -27,13 +28,14 @@ export class ApiClient {
 
   /**
    * Send transcription to backend for routing to device.
+   * Accepts Segment[] payload for key action support.
    * Returns success response or error response per backend contract.
    */
-  async sendTranscription(deviceId: string, text: string): Promise<ApiResponse> {
+  async sendTranscription(deviceId: string, payload: Segment[]): Promise<ApiResponse> {
     const response = await fetch(`${this.baseUrl}/transcription`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId, text }),
+      body: JSON.stringify({ deviceId, payload }),
     });
 
     return response.json() as Promise<ApiResponse>;
@@ -41,12 +43,13 @@ export class ApiClient {
 
   /**
    * Send queued transcription item.
-   * Convenience wrapper that extracts deviceId and text from queue item.
+   * Parses text to segments and sends via sendTranscription.
    * Returns true if successful (success: true in response).
    */
   async sendQueuedItem(item: QueuedTranscription): Promise<boolean> {
     try {
-      const response = await this.sendTranscription(item.deviceId, item.text);
+      const segments = parseToSegments(item.text);
+      const response = await this.sendTranscription(item.deviceId, segments);
       return response.success;
     } catch {
       // Network error or timeout

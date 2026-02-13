@@ -24,6 +24,14 @@ export interface HistoryItem {
   sent: boolean;  // Was successfully sent at least once
 }
 
+// Queued transcription (for offline retry)
+export interface QueuedTranscription {
+  id: string;
+  deviceId: string;
+  text: string;
+  timestamp: number;
+}
+
 // Connection status
 export type ConnectionStatus = 'online' | 'offline' | 'reconnecting';
 
