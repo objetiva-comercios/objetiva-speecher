@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCommands } from './commandParser';
+import { parseCommands, parseToSegments } from './commandParser';
 
 describe('parseCommands', () => {
   describe('empty and passthrough', () => {
@@ -357,6 +357,110 @@ describe('parseCommands', () => {
 
     it('handles multiple punctuation types', () => {
       expect(parseCommands('primero punto segundo coma tercero dos puntos final')).toBe('primero. segundo, tercero: final');
+    });
+  });
+});
+
+describe('parseToSegments', () => {
+  describe('key action detection', () => {
+    it('detects "enter" as key action', () => {
+      expect(parseToSegments('enter')).toEqual([
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+
+    it('detects "nueva linea" as key action', () => {
+      expect(parseToSegments('nueva linea')).toEqual([
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+
+    it('detects "nueva linea" with accent as key action', () => {
+      expect(parseToSegments('nueva linea')).toEqual([
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+
+    it('detects "tab" as key action', () => {
+      expect(parseToSegments('tab')).toEqual([
+        { type: 'key', key: 'tab' }
+      ]);
+    });
+
+    it('detects "tabulador" as key action', () => {
+      expect(parseToSegments('tabulador')).toEqual([
+        { type: 'key', key: 'tab' }
+      ]);
+    });
+  });
+
+  describe('mixed content', () => {
+    it('splits text around enter', () => {
+      expect(parseToSegments('hola enter mundo')).toEqual([
+        { type: 'text', value: 'hola' },
+        { type: 'key', key: 'enter' },
+        { type: 'text', value: 'mundo' }
+      ]);
+    });
+
+    it('handles multiple key actions', () => {
+      expect(parseToSegments('tab hola tab')).toEqual([
+        { type: 'key', key: 'tab' },
+        { type: 'text', value: 'hola' },
+        { type: 'key', key: 'tab' }
+      ]);
+    });
+
+    it('handles consecutive key actions', () => {
+      expect(parseToSegments('enter enter')).toEqual([
+        { type: 'key', key: 'enter' },
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+  });
+
+  describe('integration with punctuation parsing', () => {
+    it('parses punctuation before key actions', () => {
+      expect(parseToSegments('punto enter')).toEqual([
+        { type: 'text', value: '.' },
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+
+    it('handles complex mixed content', () => {
+      expect(parseToSegments('hola punto enter mundo')).toEqual([
+        { type: 'text', value: 'hola.' },
+        { type: 'key', key: 'enter' },
+        { type: 'text', value: 'mundo' }
+      ]);
+    });
+  });
+
+  describe('edge cases', () => {
+    it('returns empty array for empty string', () => {
+      expect(parseToSegments('')).toEqual([]);
+    });
+
+    it('returns empty array for whitespace only', () => {
+      expect(parseToSegments('   ')).toEqual([]);
+    });
+
+    it('returns text segment for no commands', () => {
+      expect(parseToSegments('hello world')).toEqual([
+        { type: 'text', value: 'hello world' }
+      ]);
+    });
+
+    it('is case insensitive', () => {
+      expect(parseToSegments('ENTER')).toEqual([
+        { type: 'key', key: 'enter' }
+      ]);
+    });
+
+    it('is case insensitive for multi-word commands', () => {
+      expect(parseToSegments('Nueva Linea')).toEqual([
+        { type: 'key', key: 'enter' }
+      ]);
     });
   });
 });
