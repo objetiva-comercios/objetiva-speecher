@@ -120,7 +120,8 @@ async function deliverQueuedMessages(
     const serverMessage = {
       type: 'transcription' as const,
       id: msg.id,
-      text: msg.text,
+      text: msg.text,     // Legacy: for backwards compatibility
+      payload: msg.payload,  // New: Segment[] for key actions
       timestamp: msg.timestamp,
     };
 
