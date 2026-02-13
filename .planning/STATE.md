@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 
 ## Current Position
 
-Phase: 5 of 6 (Command Parser & Text Symbols)
-Plan: 2 of 3 (estimate)
-Status: Plan 05-02 complete
-Last activity: 2026-02-12 — Completed 05-02-PLAN.md (Parser Integration & Visual Feedback)
+Phase: 6 of 6 (Key Actions Protocol)
+Plan: 1 of 3 (estimate)
+Status: Plan 06-01 complete
+Last activity: 2026-02-13 — Completed 06-01-PLAN.md (Types Protocol Extension)
 
-Progress: [######------------------] 30% (v1.0 complete, Phase 5 Plans 1-2 complete)
+Progress: [########----------------] 35% (v1.0 complete, Phase 5 Plans 1-2 complete, Phase 6 Plan 1 complete)
 
 ## Milestone v1.1 Goals
 
@@ -53,6 +53,9 @@ Progress: [######------------------] 30% (v1.0 complete, Phase 5 Plans 1-2 compl
 | 2026-02-12 | Commands sorted by length | Longest-match-first |
 | 2026-02-12 | Parse in onPartialResults | Real-time feedback as user speaks |
 | 2026-02-12 | 180ms pulse for visual feedback | Brief, non-disruptive confirmation |
+| 2026-02-13 | text field optional on ServerMessage | Forward-compatible protocol evolution |
+| 2026-02-13 | payload field optional | Backward-compatible gradual rollout |
+| 2026-02-13 | Segment discriminated union | Type-safe exhaustive pattern matching |
 
 ## Performance Metrics
 
@@ -76,6 +79,8 @@ Progress: [######------------------] 30% (v1.0 complete, Phase 5 Plans 1-2 compl
 - 2026-02-12: Used TDD methodology (63 tests)
 - 2026-02-12: Integrated parser into onPartialResults for real-time feedback
 - 2026-02-12: Added 180ms blue pulse visual feedback for conversions
+- 2026-02-13: Added KeyAction and Segment types to all 4 packages
+- 2026-02-13: Made text optional, added payload field for Segment[] in ServerMessage
 
 ### Active TODOs
 - [x] Plan Phase 5 (command parser implementation)
@@ -84,13 +89,16 @@ Progress: [######------------------] 30% (v1.0 complete, Phase 5 Plans 1-2 compl
 - [x] Integrate parser into speech recognition hook
 - [x] Add visual feedback for command conversions
 - [ ] Manual testing on Android device (Plan 05-03)
+- [x] Add Segment/KeyAction types to all packages (Plan 06-01)
+- [ ] Implement segmentText() in mobile app (Plan 06-02)
+- [ ] Add payload processing in agents (Plan 06-03)
 
 ### Blockers
 None.
 
 ## Session Continuity
 
-Last session: 2026-02-12T18:17:27Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-02-13T03:48:40Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
-Next action: Plan 05-03 (manual testing checkpoint) or continue with remaining Phase 5 plans
+Next action: Plan 06-02 (Mobile App Segmenter) or Plan 06-03 (Agent Payload Processing)
