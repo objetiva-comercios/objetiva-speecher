@@ -19,10 +19,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Mobile App + Voice** - Android voice capture with device selection and resilience
 - [x] **Phase 4: Linux Desktop Agent** - X11 agent support for Linux workstations
 
-### Milestone v1.1 (Active)
+### Milestone v1.1 (Complete)
 
-- [ ] **Phase 5: Command Parser & Text Symbols** - Parse voice commands and replace with punctuation/symbols
-- [ ] **Phase 6: Key Actions Protocol** - Extend protocol for Enter/Tab keyboard simulation
+- [x] **Phase 5: Command Parser & Text Symbols** - Parse voice commands and replace with punctuation/symbols
+- [x] **Phase 6: Key Actions Protocol** - Extend protocol for Enter/Tab keyboard simulation
 
 ## Phase Details
 
@@ -115,9 +115,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Command parser with TDD (pure function + test suite)
-- [ ] 05-02-PLAN.md - Hook integration and visual feedback
-- [ ] 05-03-PLAN.md - End-to-end verification on Android device
+- [x] 05-01-PLAN.md - Command parser with TDD (pure function + test suite)
+- [x] 05-02-PLAN.md - Hook integration and visual feedback
+- [x] 05-03-PLAN.md - End-to-end verification on Android device
 
 ### Phase 6: Key Actions Protocol (v1.1)
 **Goal**: User can insert keyboard actions (Enter, Tab) via voice commands, executed by agents as actual key presses
@@ -132,11 +132,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 06-01-PLAN.md - Types protocol extension (Segment, KeyAction types in all packages)
-- [ ] 06-02-PLAN.md - Mobile parser extension and API payload format
-- [ ] 06-03-PLAN.md - Backend protocol support for payload messages
-- [ ] 06-04-PLAN.md - Windows agent key action execution
-- [ ] 06-05-PLAN.md - Linux agent key action execution
+- [x] 06-01-PLAN.md - Types protocol extension (Segment, KeyAction types in all packages)
+- [x] 06-02-PLAN.md - Mobile parser extension and API payload format
+- [x] 06-03-PLAN.md - Backend protocol support for payload messages
+- [x] 06-04-PLAN.md - Windows agent key action execution
+- [x] 06-05-PLAN.md - Linux agent key action execution
 
 ## Progress
 
@@ -149,9 +149,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Windows Desktop Agent | 4/4 | Complete | 2026-02-07 |
 | 3. Mobile App + Voice | 8/8 | Complete | 2026-02-11 |
 | 4. Linux Desktop Agent | 4/4 | Complete | 2026-02-11 |
-| 5. Command Parser & Text Symbols | 0/3 | Planning Complete | - |
-| 6. Key Actions Protocol | 0/5 | Planning Complete | - |
+| 5. Command Parser & Text Symbols | 3/3 | Complete | 2026-02-12 |
+| 6. Key Actions Protocol | 5/5 | Complete | 2026-02-13 |
 
 ---
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-02-13 (Phase 6 planning complete)*
+*Last updated: 2026-02-13 (Milestone v1.1 complete)*

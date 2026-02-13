@@ -9,47 +9,47 @@ Requirements for this milestone. Voice commands for special keys and punctuation
 
 ### Command Parser
 
-- [ ] **PARSE-01**: Mobile app detects command words in transcribed text
-- [ ] **PARSE-02**: Command words are replaced with their output (symbol or key action)
-- [ ] **PARSE-03**: Parser processes text before sending to backend
-- [ ] **PARSE-04**: Non-command words pass through unchanged
-- [ ] **PARSE-05**: Parser is case-insensitive (handles "Punto" and "punto")
+- [x] **PARSE-01**: Mobile app detects command words in transcribed text
+- [x] **PARSE-02**: Command words are replaced with their output (symbol or key action)
+- [x] **PARSE-03**: Parser processes text before sending to backend
+- [x] **PARSE-04**: Non-command words pass through unchanged
+- [x] **PARSE-05**: Parser is case-insensitive (handles "Punto" and "punto")
 
 ### Special Keys
 
-- [ ] **KEY-01**: "nueva línea" or "enter" inserts Enter key action
-- [ ] **KEY-02**: "tabulador" or "tab" inserts Tab key action
-- [ ] **KEY-03**: "espacio" inserts explicit space character
+- [x] **KEY-01**: "nueva línea" or "enter" inserts Enter key action
+- [x] **KEY-02**: "tabulador" or "tab" inserts Tab key action
+- [x] **KEY-03**: "espacio" inserts explicit space character
 
 ### Basic Punctuation
 
-- [ ] **PUNCT-01**: "punto" → "."
-- [ ] **PUNCT-02**: "coma" → ","
-- [ ] **PUNCT-03**: "dos puntos" → ":"
-- [ ] **PUNCT-04**: "punto y coma" → ";"
-- [ ] **PUNCT-05**: "signo de interrogación" or "interrogación" → "?"
-- [ ] **PUNCT-06**: "signo de exclamación" or "exclamación" → "!"
-- [ ] **PUNCT-07**: "guión" → "-"
+- [x] **PUNCT-01**: "punto" → "."
+- [x] **PUNCT-02**: "coma" → ","
+- [x] **PUNCT-03**: "dos puntos" → ":"
+- [x] **PUNCT-04**: "punto y coma" → ";"
+- [x] **PUNCT-05**: "signo de interrogación" or "interrogación" → "?"
+- [x] **PUNCT-06**: "signo de exclamación" or "exclamación" → "!"
+- [x] **PUNCT-07**: "guión" → "-"
 
 ### Extended Punctuation
 
-- [ ] **PUNCT-08**: "abrir paréntesis" → "("
-- [ ] **PUNCT-09**: "cerrar paréntesis" → ")"
-- [ ] **PUNCT-10**: "comillas" → '"'
-- [ ] **PUNCT-11**: "abrir comillas" → '"'
-- [ ] **PUNCT-12**: "cerrar comillas" → '"'
-- [ ] **PUNCT-13**: "arroba" → "@"
-- [ ] **PUNCT-14**: "punto com" → ".com"
+- [x] **PUNCT-08**: "abrir paréntesis" → "("
+- [x] **PUNCT-09**: "cerrar paréntesis" → ")"
+- [x] **PUNCT-10**: "comillas" → '"'
+- [x] **PUNCT-11**: "abrir comillas" → '"'
+- [x] **PUNCT-12**: "cerrar comillas" → '"'
+- [x] **PUNCT-13**: "arroba" → "@"
+- [x] **PUNCT-14**: "punto com" → ".com"
 
 ### Backend Support
 
-- [ ] **BACK-09**: Backend accepts messages with key actions (not just text)
-- [ ] **BACK-10**: Backend forwards key actions to agent via WebSocket
+- [x] **BACK-09**: Backend accepts messages with key actions (not just text)
+- [x] **BACK-10**: Backend forwards key actions to agent via WebSocket
 
 ### Agent Support
 
-- [ ] **AGENT-01**: Windows agent executes key actions (Enter, Tab)
-- [ ] **AGENT-02**: Linux agent executes key actions (Enter, Tab)
+- [x] **AGENT-01**: Windows agent executes key actions (Enter, Tab)
+- [x] **AGENT-02**: Linux agent executes key actions (Enter, Tab)
 
 ## Out of Scope
 
@@ -69,32 +69,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PARSE-01 | Phase 5 | Pending |
-| PARSE-02 | Phase 5 | Pending |
-| PARSE-03 | Phase 5 | Pending |
-| PARSE-04 | Phase 5 | Pending |
-| PARSE-05 | Phase 5 | Pending |
-| KEY-01 | Phase 6 | Pending |
-| KEY-02 | Phase 6 | Pending |
-| KEY-03 | Phase 5 | Pending |
-| PUNCT-01 | Phase 5 | Pending |
-| PUNCT-02 | Phase 5 | Pending |
-| PUNCT-03 | Phase 5 | Pending |
-| PUNCT-04 | Phase 5 | Pending |
-| PUNCT-05 | Phase 5 | Pending |
-| PUNCT-06 | Phase 5 | Pending |
-| PUNCT-07 | Phase 5 | Pending |
-| PUNCT-08 | Phase 5 | Pending |
-| PUNCT-09 | Phase 5 | Pending |
-| PUNCT-10 | Phase 5 | Pending |
-| PUNCT-11 | Phase 5 | Pending |
-| PUNCT-12 | Phase 5 | Pending |
-| PUNCT-13 | Phase 5 | Pending |
-| PUNCT-14 | Phase 5 | Pending |
-| BACK-09 | Phase 6 | Pending |
-| BACK-10 | Phase 6 | Pending |
-| AGENT-01 | Phase 6 | Pending |
-| AGENT-02 | Phase 6 | Pending |
+| PARSE-01 | Phase 5 | Complete |
+| PARSE-02 | Phase 5 | Complete |
+| PARSE-03 | Phase 5 | Complete |
+| PARSE-04 | Phase 5 | Complete |
+| PARSE-05 | Phase 5 | Complete |
+| KEY-01 | Phase 6 | Complete |
+| KEY-02 | Phase 6 | Complete |
+| KEY-03 | Phase 5 | Complete |
+| PUNCT-01 | Phase 5 | Complete |
+| PUNCT-02 | Phase 5 | Complete |
+| PUNCT-03 | Phase 5 | Complete |
+| PUNCT-04 | Phase 5 | Complete |
+| PUNCT-05 | Phase 5 | Complete |
+| PUNCT-06 | Phase 5 | Complete |
+| PUNCT-07 | Phase 5 | Complete |
+| PUNCT-08 | Phase 5 | Complete |
+| PUNCT-09 | Phase 5 | Complete |
+| PUNCT-10 | Phase 5 | Complete |
+| PUNCT-11 | Phase 5 | Complete |
+| PUNCT-12 | Phase 5 | Complete |
+| PUNCT-13 | Phase 5 | Complete |
+| PUNCT-14 | Phase 5 | Complete |
+| BACK-09 | Phase 6 | Complete |
+| BACK-10 | Phase 6 | Complete |
+| AGENT-01 | Phase 6 | Complete |
+| AGENT-02 | Phase 6 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 26
