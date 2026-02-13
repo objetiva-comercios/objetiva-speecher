@@ -3,12 +3,22 @@
  *
  * Implements real-time parsing of voice commands like "punto" -> "."
  * with word boundary protection, case insensitivity, and escape syntax.
+ *
+ * Also provides parseToSegments() for key action detection (Enter, Tab).
  */
+
+import type { Segment, KeyAction } from '../types';
 
 /** Command definition with patterns (primary + aliases) and output symbol */
 interface CommandDef {
   patterns: string[];
   output: string;
+}
+
+/** Key command definition for Enter/Tab detection */
+interface KeyCommandDef {
+  patterns: string[];
+  key: KeyAction;
 }
 
 /**
@@ -50,6 +60,16 @@ const COMMANDS: CommandDef[] = [
   { patterns: ['pesos', 'dolar', 'dólar'], output: '$' }, // pesos is primary, dolar/dólar as aliases
   { patterns: ['coma'], output: ',' },
   { patterns: ['arroba'], output: '@' },
+];
+
+/**
+ * Key action commands - detected after punctuation parsing.
+ * These produce key action segments instead of text.
+ * Sorted by pattern length (longest first).
+ */
+const KEY_COMMANDS: KeyCommandDef[] = [
+  { patterns: ['nueva linea', 'nueva línea', 'enter'], key: 'enter' },
+  { patterns: ['tabulador', 'tab'], key: 'tab' },
 ];
 
 /** Keyword for escape syntax: "literal X" preserves X as-is */
@@ -161,4 +181,89 @@ export function parseCommands(text: string): string {
   // Trim only if result is not just spaces (preserve explicit espacios)
   const trimmed = processed.trim();
   return trimmed === '' && processed.length > 0 ? processed : trimmed;
+}
+
+/**
+ * Splits text into segments around key action commands.
+ * Called after parseCommands() has processed punctuation.
+ *
+ * @param text - Text with punctuation already parsed
+ * @returns Array of text and key action segments
+ */
+function splitIntoSegments(text: string): Segment[] {
+  const segments: Segment[] = [];
+
+  // Build combined regex for all key commands (longest first)
+  const allPatterns = KEY_COMMANDS
+    .flatMap(kc => kc.patterns)
+    .sort((a, b) => b.length - a.length);
+
+  const regex = new RegExp(
+    `\\b(${allPatterns.map(escapeRegexChars).join('|')})\\b`,
+    'gi'
+  );
+
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before match (if non-empty after trim)
+    if (match.index > lastIndex) {
+      const textBefore = text.slice(lastIndex, match.index).trim();
+      if (textBefore) {
+        segments.push({ type: 'text', value: textBefore });
+      }
+    }
+
+    // Add key action
+    const matchedPattern = match[1].toLowerCase();
+    // Handle accented variants by normalizing
+    const normalizedPattern = matchedPattern
+      .replace(/í/g, 'i')
+      .replace(/é/g, 'e');
+
+    const keyCmd = KEY_COMMANDS.find(kc =>
+      kc.patterns.some(p =>
+        p.toLowerCase().replace(/í/g, 'i').replace(/é/g, 'e') === normalizedPattern
+      )
+    );
+
+    if (keyCmd) {
+      segments.push({ type: 'key', key: keyCmd.key });
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    const textAfter = text.slice(lastIndex).trim();
+    if (textAfter) {
+      segments.push({ type: 'text', value: textAfter });
+    }
+  }
+
+  return segments;
+}
+
+/**
+ * Parses voice input into an array of segments (text and key actions).
+ *
+ * Flow:
+ * 1. Apply parseCommands() for punctuation/symbol replacement
+ * 2. Detect key action commands (enter, tab) and split into segments
+ *
+ * @param text - Raw voice input
+ * @returns Array of Segment (text or key action)
+ */
+export function parseToSegments(text: string): Segment[] {
+  if (!text || !text.trim()) {
+    return [];
+  }
+
+  // Step 1: Apply text command parsing (punctuation, symbols)
+  const parsed = parseCommands(text);
+
+  // Step 2: Split on key commands
+  return splitIntoSegments(parsed);
 }
