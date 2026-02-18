@@ -41,7 +41,7 @@ export async function transcriptionRoute(fastify: FastifyInstance): Promise<void
                   {
                     properties: {
                       type: { const: 'key' },
-                      key: { enum: ['enter', 'tab'] },
+                      key: { enum: ['enter', 'tab', 'up', 'down', 'left', 'right', 'home', 'end'] },
                     },
                     required: ['type', 'key'],
                   },

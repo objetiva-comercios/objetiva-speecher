@@ -27,18 +27,13 @@ interface UseSpeechRecognitionResult {
 }
 
 /**
- * Simplified speech recognition hook.
+ * Speech recognition hook with long dictation support.
  *
- * Flow:
- * 1. User taps to start -> starts listening
- * 2. User speaks -> liveText updates in real-time (with command parsing)
- * 3. Either:
- *    a. User taps stop -> captures final text, goes to editing
- *    b. Android detects silence -> automatically stops, captures final text, goes to editing
- * 4. User reviews/edits text
- * 5. User sends or cancels
- *
- * No auto-restart, no rafaga mode - just simple, predictable behavior.
+ * Handles two Android limitations:
+ * 1. Buffer truncation: Android drops old text during long dictation within a session.
+ *    Detected by monitoring partial result length drops and accumulating lost text.
+ * 2. Session timeout: Android stops recognition after ~60s.
+ *    Always auto-restarts, with a 3s timeout to finalize if no new speech arrives.
  */
 export function useSpeechRecognition(): UseSpeechRecognitionResult {
   const [state, setState] = useState<RecordingState>('idle');
@@ -55,9 +50,21 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
   const liveTextRef = useRef<string>('');
   const isRecordingRef = useRef<boolean>(false);
   const hasStoppedRef = useRef<boolean>(false);
+  // Set immediately on manual stop to prevent auto-restart race conditions
+  const userStoppedRef = useRef<boolean>(false);
+  // Accumulated text from previous recognition sessions or buffer truncations
+  const accumulatedTextRef = useRef<string>('');
+  // Previous raw text from Android (before parsing) for truncation detection
+  const prevRawTextRef = useRef<string>('');
+  // Whether partial results were received in the current recognition session
+  const gotResultsInSessionRef = useRef<boolean>(false);
+  // Timeout to finalize if no speech arrives after auto-restart
+  const noSpeechTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Silence timeout in milliseconds - show error if no speech detected
+  // Silence timeout in milliseconds - show error if no speech detected at all
   const SILENCE_TIMEOUT_MS = 5000;
+  // Time to wait for speech after auto-restart before finalizing
+  const NO_SPEECH_AFTER_RESTART_MS = 3000;
 
   // Check permission and availability on mount
   useEffect(() => {
@@ -68,6 +75,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       setHasPermission(permitted);
     };
     checkSetup();
+  }, []);
+
+  // Clear no-speech timeout
+  const clearNoSpeechTimeout = useCallback(() => {
+    if (noSpeechTimeoutRef.current) {
+      clearTimeout(noSpeechTimeoutRef.current);
+      noSpeechTimeoutRef.current = null;
+    }
   }, []);
 
   // Clear silence timer
@@ -105,51 +120,81 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     hasStoppedRef.current = true;
 
     const text = liveTextRef.current.trim();
-    console.log('[Speech] Finalizing with text:', text);
+    console.log('[Speech] Finalizing with text:', text.length, 'chars');
 
     setFinalText(text);
     setState(text ? 'editing' : 'idle');
     isRecordingRef.current = false;
 
-    // Stop timers
+    // Stop all timers
     clearSilenceTimer();
+    clearNoSpeechTimeout();
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-  }, [clearSilenceTimer]);
+  }, [clearSilenceTimer, clearNoSpeechTimeout]);
 
   // Setup speech listeners
   useEffect(() => {
     setupSpeechListeners(
-      // onPartialResults - live text updates with command parsing
+      // onPartialResults - live text updates with command parsing and truncation detection
       (text) => {
-        console.log('[Speech] Partial result:', text);
+        console.log('[Speech] Partial result:', text.length, 'chars');
+        gotResultsInSessionRef.current = true;
+
+        // Clear restart timeout — user is speaking
+        if (noSpeechTimeoutRef.current) {
+          clearTimeout(noSpeechTimeoutRef.current);
+          noSpeechTimeoutRef.current = null;
+        }
+
+        const prevRaw = prevRawTextRef.current;
+
+        // Detect Android buffer truncation: text drops significantly.
+        // This happens during long dictation when Android's internal buffer overflows
+        // and starts sending only the most recent portion of recognized text.
+        if (prevRaw.length > 50 && text.length < prevRaw.length * 0.5) {
+          const previousFull = liveTextRef.current.trim();
+          if (previousFull) {
+            accumulatedTextRef.current = previousFull;
+            console.log('[Speech] Buffer truncation detected, saved', accumulatedTextRef.current.length, 'chars');
+          }
+        }
+
+        prevRawTextRef.current = text;
+
         // Parse voice commands (punto -> ., coma -> ,, etc.) in real-time
         const parsed = parseCommands(text);
-        liveTextRef.current = parsed;
-        setLiveText(parsed);
+
+        // Combine accumulated text with current session
+        const fullText = accumulatedTextRef.current
+          ? accumulatedTextRef.current + ' ' + parsed
+          : parsed;
+
+        liveTextRef.current = fullText;
+        setLiveText(fullText);
         // Reset silence timer - user is speaking
         resetSilenceTimer();
       },
-      // onError
+      // onError - skip during active recording, listeningState handler manages lifecycle
       (speechError) => {
         console.log('[Speech] Error:', speechError.code, speechError.message);
 
-        // Code 6 = no speech, Code 7 = no match
-        // These mean Android stopped listening without getting useful input
-        if (speechError.code === 6 || speechError.code === 7) {
-          // If we have some text, use it and go to editing
-          if (liveTextRef.current.trim()) {
-            finalizeRecording();
-            return;
-          }
-          // No text captured - show error and go to idle
-          setError(speechError);
-        } else {
-          setError(speechError);
+        // During active recording (user hasn't manually stopped), skip error handling.
+        // The listeningState handler will auto-restart with a no-speech safety timeout.
+        if (isRecordingRef.current && !hasStoppedRef.current && !userStoppedRef.current) {
+          console.log('[Speech] Skipping error during active recording');
+          return;
         }
 
+        // User stopped or not recording - normal error handling
+        if (liveTextRef.current.trim()) {
+          finalizeRecording();
+          return;
+        }
+
+        setError(speechError);
         setState('idle');
         isRecordingRef.current = false;
         hasStoppedRef.current = true;
@@ -159,21 +204,43 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
           timerRef.current = null;
         }
       },
-      // onListeningState - Android stopped listening
+      // onListeningState - always auto-restart with no-speech safety timeout
       (isListening) => {
         console.log('[Speech] Listening state:', isListening);
 
-        if (!isListening && isRecordingRef.current && !hasStoppedRef.current) {
-          // Android stopped on its own (silence detected)
-          // Longer delay to ensure we capture the final partial result
-          // Android sometimes sends one more partial result after stopping
+        if (!isListening && isRecordingRef.current && !hasStoppedRef.current && !userStoppedRef.current) {
+          // Android stopped on its own (timeout or silence).
+          // Always restart. A 3s no-speech timeout will finalize if user truly stopped.
+          // Delay 500ms so the final partialResults from onResults arrives first.
           setTimeout(() => {
-            // If no text was captured, show "no speech detected" error
-            if (!liveTextRef.current.trim()) {
-              setError({ code: 6, message: 'No se detecto voz. Habla mas fuerte.' });
+            if (!isRecordingRef.current || hasStoppedRef.current || userStoppedRef.current) return;
+
+            // Snapshot current text as accumulated
+            const currentText = liveTextRef.current.trim();
+            if (currentText) {
+              accumulatedTextRef.current = currentText;
+              prevRawTextRef.current = '';
+              console.log('[Speech] Accumulated', accumulatedTextRef.current.length, 'chars, restarting');
             }
-            finalizeRecording();
-          }, 300);
+
+            gotResultsInSessionRef.current = false;
+
+            // Restart recognition
+            startListening().catch(() => {
+              console.log('[Speech] Auto-restart failed, finalizing');
+              finalizeRecording();
+            });
+
+            // Safety timeout: if no speech within 3s, user stopped talking → finalize
+            noSpeechTimeoutRef.current = setTimeout(() => {
+              if (isRecordingRef.current && !hasStoppedRef.current && !userStoppedRef.current
+                  && !gotResultsInSessionRef.current) {
+                console.log('[Speech] No speech after restart, finalizing');
+                stopListening().catch(() => {});
+                finalizeRecording();
+              }
+            }, NO_SPEECH_AFTER_RESTART_MS);
+          }, 500);
         }
       }
     );
@@ -181,12 +248,13 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     return () => {
       cleanupSpeechListeners();
       clearSilenceTimer();
+      clearNoSpeechTimeout();
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
-  }, [finalizeRecording, resetSilenceTimer, clearSilenceTimer]);
+  }, [finalizeRecording, resetSilenceTimer, clearSilenceTimer, clearNoSpeechTimeout]);
 
   // Start recording
   const startRecording = useCallback(async () => {
@@ -205,8 +273,13 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       setLiveText('');
       setFinalText('');
       liveTextRef.current = '';
+      accumulatedTextRef.current = '';
+      prevRawTextRef.current = '';
       isRecordingRef.current = true;
       hasStoppedRef.current = false;
+      userStoppedRef.current = false;
+      gotResultsInSessionRef.current = false;
+      clearNoSpeechTimeout();
       setState('recording');
 
       // Start timer
@@ -220,7 +293,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       // Start silence detection timer
       resetSilenceTimer();
 
-      await startListening();
+      // Fire-and-forget: errors handled by errorCallback and listeningState handler.
+      // Do NOT await — awaiting causes a race condition where the rejected promise's
+      // catch handler overwrites the recording state set by finalizeRecording.
+      startListening().catch(() => {});
     } catch (err: any) {
       console.error('[Speech] Start error:', err);
       setError({ code: -1, message: err.message || 'Error al iniciar grabacion' });
@@ -233,13 +309,16 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
         timerRef.current = null;
       }
     }
-  }, [hasPermission, resetSilenceTimer]);
+  }, [hasPermission, resetSilenceTimer, clearNoSpeechTimeout]);
 
   // Stop recording manually
   const stopRecording = useCallback(async () => {
     try {
       console.log('[Speech] Manual stop');
+      // Set immediately to prevent auto-restart in listeningState handler
+      userStoppedRef.current = true;
       clearSilenceTimer();
+      clearNoSpeechTimeout();
       await stopListening();
 
       // Longer delay to capture any final partial result
@@ -251,7 +330,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
       setError({ code: -1, message: err.message || 'Error al detener grabacion' });
       finalizeRecording();
     }
-  }, [finalizeRecording, clearSilenceTimer]);
+  }, [finalizeRecording, clearSilenceTimer, clearNoSpeechTimeout]);
 
   // Clear error
   const clearError = useCallback(() => {
@@ -266,9 +345,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     setError(null);
     setRecordingDuration(0);
     liveTextRef.current = '';
+    accumulatedTextRef.current = '';
+    prevRawTextRef.current = '';
     isRecordingRef.current = false;
     hasStoppedRef.current = false;
-  }, []);
+    userStoppedRef.current = false;
+    gotResultsInSessionRef.current = false;
+    clearNoSpeechTimeout();
+  }, [clearNoSpeechTimeout]);
 
   return {
     state,

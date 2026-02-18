@@ -53,7 +53,7 @@ export function useRafagaQueue({ deviceId, enabled }: UseRafagaQueueOptions): Us
       const api = getApiClient();
       // Parse text into segments (text and key actions)
       const parsedSegments = parseToSegments(segment.text);
-      const response = await api.sendTranscription(deviceId, parsedSegments);
+      const response = await api.sendTranscription(deviceId, parsedSegments, segment.text);
 
       if (response.success) {
         // Mark as sent

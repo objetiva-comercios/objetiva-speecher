@@ -13,12 +13,11 @@ export function simulatePaste(): void {
 }
 
 /**
- * Execute a key action (Enter or Tab)
+ * Execute a key action (navigation, enter, tab)
  * Uses robotjs keyTap for atomic key press/release
- * @param key - The key action to execute ('enter' or 'tab')
+ * @param key - The key action: 'enter'|'tab'|'up'|'down'|'left'|'right'|'home'|'end'
  */
 export function executeKeyAction(key: KeyAction): void {
-  // robotjs uses lowercase key names: 'enter', 'tab'
-  // These match our KeyAction type directly
+  // robotjs uses lowercase key names that match our KeyAction type
   robot.keyTap(key);
 }

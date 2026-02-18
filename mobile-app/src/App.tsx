@@ -1,11 +1,14 @@
-import { useState, useCallback } from 'react';
-import { useApp, handleReconnect } from './hooks/useApp';
+import { useState, useCallback, useEffect } from 'react';
+import { useApp } from './hooks/useApp';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useDeviceList } from './hooks/useDeviceList';
 import { useSpeechRecognition } from './hooks/useSpeechRecognition';
-import { useQueue } from './hooks/useQueue';
+import { useHistory } from './hooks/useHistory';
 import { getApiClient, isApiClientInitialized } from './services/api';
+import { getJSON, setJSON } from './services/storage';
 import { parseToSegments } from './services/commandParser';
+import type { HistoryItem } from './types';
+import type { ButtonMode } from './components/RecordButton';
 
 import { DeviceSelector } from './components/DeviceSelector';
 import { StatusIndicator } from './components/StatusIndicator';
@@ -14,24 +17,48 @@ import { RecordButton } from './components/RecordButton';
 import { RecordingTimer } from './components/RecordingTimer';
 import { WaveformVisualizer } from './components/WaveformVisualizer';
 import { TranscriptionEditor } from './components/TranscriptionEditor';
-import { QueueList } from './components/QueueList';
-import { SuccessFeedback } from './components/SuccessFeedback';
+import { HistoryList } from './components/HistoryList';
+import { Toast } from './components/Toast';
 
 function App() {
   const { state: appState, error: appError, setManualUrl, isReady } = useApp();
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [autoSend, setAutoSend] = useState(true);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Queue hook (for offline/failed sends)
-  const { items: queueItems, addToQueue, removeFromQueue, replayAll, isReplaying } = useQueue();
+  // Button mode: 'voice' (normal) or 'text' (double-tap activated)
+  const [buttonMode, setButtonMode] = useState<ButtonMode>('voice');
+  // Text mode input (for double-tap manual text entry)
+  const [textModeText, setTextModeText] = useState('');
+  const [isTextModeActive, setIsTextModeActive] = useState(false);
 
-  // Network status with reconnect handler
-  const { status: networkStatus, isOnline } = useNetworkStatus(
-    useCallback(() => {
-      handleReconnect(replayAll);
-    }, [replayAll]),
-    undefined
-  );
+  // Load auto-send preference on mount
+  useEffect(() => {
+    getJSON<boolean>('autoSend').then((value) => {
+      if (value !== null) setAutoSend(value);
+    });
+  }, []);
+
+  // Save auto-send preference when changed
+  const toggleAutoSend = useCallback(async () => {
+    const newValue = !autoSend;
+    setAutoSend(newValue);
+    await setJSON('autoSend', newValue);
+  }, [autoSend]);
+
+  // History hook (replaces queue)
+  const {
+    items: historyItems,
+    addItem: addToHistory,
+    resendItem,
+    copyItem,
+    deleteItem: deleteHistoryItem,
+    isSending: historySendingId,
+  } = useHistory();
+
+  // Network status
+  const { status: networkStatus, isOnline } = useNetworkStatus(undefined, undefined);
 
   // Device list
   const {
@@ -42,11 +69,12 @@ function App() {
     hasDevices,
   } = useDeviceList();
 
-  // Speech recognition - simplified
+  // Speech recognition
   const {
     state: recordingState,
     liveText,
     finalText,
+    error: speechError,
     recordingDuration,
     startRecording,
     stopRecording,
@@ -55,42 +83,145 @@ function App() {
     resetToIdle,
   } = useSpeechRecognition();
 
+  // Show speech errors as toast
+  useEffect(() => {
+    if (speechError) {
+      setToastMessage(speechError.message);
+      clearError();
+    }
+  }, [speechError, clearError]);
+
   // Determine if recording should be disabled
   const isRecordingDisabled = !isOnline || !hasDevices || !isReady;
 
   // Handle send transcription
-  const handleSend = useCallback(async () => {
-    if (!selectedDevice || !finalText.trim() || !isApiClientInitialized()) {
+  const handleSend = useCallback(async (textToSend?: string) => {
+    const text = textToSend || finalText;
+    if (!selectedDevice || !text.trim() || !isApiClientInitialized()) {
       return;
     }
 
+    const wasTextMode = isTextModeActive;
     setIsSending(true);
     try {
       const api = getApiClient();
-      // Parse text into segments (text and key actions)
-      const segments = parseToSegments(finalText);
-      const response = await api.sendTranscription(selectedDevice, segments);
+      const trimmedText = text.trim();
+      const segments = parseToSegments(trimmedText);
+      const response = await api.sendTranscription(selectedDevice, segments, trimmedText);
 
       if (response.success) {
         setShowSuccess(true);
+        await addToHistory(selectedDevice, text.trim(), true);
         resetToIdle();
+        // Reset text mode AFTER showing success (delayed to show green pulse on orange button)
+        if (wasTextMode) {
+          setTimeout(() => {
+            setShowSuccess(false); // Clear success before switching to prevent double flash
+            setIsTextModeActive(false);
+            setTextModeText('');
+            setButtonMode('voice');
+          }, 500); // Wait for green pulse animation
+        }
       } else {
-        await addToQueue(selectedDevice, finalText.trim());
+        await addToHistory(selectedDevice, text.trim(), false);
+        setToastMessage('Error al enviar. Guardado en historial.');
         resetToIdle();
+        if (wasTextMode) {
+          setIsTextModeActive(false);
+          setTextModeText('');
+          setButtonMode('voice');
+        }
       }
     } catch {
-      await addToQueue(selectedDevice, finalText.trim());
+      await addToHistory(selectedDevice, text.trim(), false);
+      setToastMessage('Error al enviar. Guardado en historial.');
       resetToIdle();
+      if (wasTextMode) {
+        setIsTextModeActive(false);
+        setTextModeText('');
+        setButtonMode('voice');
+      }
     } finally {
       setIsSending(false);
     }
-  }, [selectedDevice, finalText, addToQueue, resetToIdle]);
+  }, [selectedDevice, finalText, addToHistory, resetToIdle, isTextModeActive]);
+
+  // Auto-send when recording stops with text (if enabled)
+  useEffect(() => {
+    if (autoSend && recordingState === 'editing' && finalText.trim() && selectedDevice) {
+      handleSend(finalText);
+    }
+  }, [autoSend, recordingState, finalText, selectedDevice, handleSend]);
 
   // Handle cancel editing
   const handleCancel = useCallback(() => {
     clearError();
     resetToIdle();
-  }, [clearError, resetToIdle]);
+    // Reset text mode if active
+    if (isTextModeActive) {
+      setIsTextModeActive(false);
+      setTextModeText('');
+      setButtonMode('voice');
+    }
+  }, [clearError, resetToIdle, isTextModeActive]);
+
+  // Clear success state after animation
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => setShowSuccess(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
+
+  // === Button handlers ===
+
+  // Single tap: Normal recording (respects auto-send toggle)
+  const handleButtonTap = useCallback(() => {
+    if (recordingState === 'recording') {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }, [recordingState, startRecording, stopRecording]);
+
+  // Double tap: Enter text mode
+  const handleButtonDoubleTap = useCallback(() => {
+    if (recordingState === 'idle') {
+      setButtonMode('text');
+      setIsTextModeActive(true);
+      setTextModeText('');
+    }
+  }, [recordingState]);
+
+  // Handle send in text mode
+  const handleTextModeSend = useCallback(() => {
+    if (textModeText.trim()) {
+      handleSend(textModeText);
+    }
+  }, [textModeText, handleSend]);
+
+  // History actions
+  const handleHistoryResend = useCallback(async (item: HistoryItem) => {
+    const success = await resendItem(item);
+    if (success) {
+      setShowSuccess(true);
+      setToastMessage('Reenviado');
+    } else {
+      setToastMessage('Error al reenviar');
+    }
+  }, [resendItem]);
+
+  const handleHistoryCopy = useCallback(async (item: HistoryItem) => {
+    await copyItem(item);
+    setToastMessage('Copiado al portapapeles');
+  }, [copyItem]);
+
+  // Edit history item: opens text mode with the item's text
+  const handleHistoryEdit = useCallback((item: HistoryItem) => {
+    setButtonMode('text');
+    setIsTextModeActive(true);
+    setTextModeText(item.text);
+  }, []);
 
   // Show config screen if backend not configured
   if (appState === 'configuring') {
@@ -112,6 +243,12 @@ function App() {
     );
   }
 
+  // Determine what to show based on state
+  const isRecording = recordingState === 'recording';
+  const isEditing = recordingState === 'editing';
+  const showEditor = isRecording || (isEditing && !autoSend) || isTextModeActive;
+  const showButton = !isEditing || autoSend || isTextModeActive;
+
   return (
     <div className="min-h-screen bg-gray-100 p-4" style={{
       paddingTop: 'calc(1rem + var(--sat, 0px))',
@@ -121,13 +258,32 @@ function App() {
     }}>
       {/* Header with device selector and status */}
       <header className="mb-6">
-        <h1 className="text-xl font-bold text-gray-800 mb-4">
-          Objetiva Speecher
+        <h1 className="text-xl font-bold text-gray-800 mb-4 text-center">
+          Speecher
         </h1>
 
-        {/* Status indicator */}
+        {/* Status indicator and auto-send toggle */}
         <div className="flex items-center justify-between mb-3">
           <StatusIndicator status={networkStatus} />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <span>Auto</span>
+            <button
+              onClick={toggleAutoSend}
+              className={`
+                w-11 h-6 rounded-full transition-colors duration-200
+                ${autoSend ? 'bg-blue-500' : 'bg-gray-300'}
+                relative flex-shrink-0
+              `}
+              aria-label={autoSend ? 'Desactivar envio automatico' : 'Activar envio automatico'}
+            >
+              <span
+                className={`
+                  absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-200
+                  ${autoSend ? 'left-6' : 'left-1'}
+                `}
+              />
+            </button>
+          </label>
         </div>
 
         {/* Device selector */}
@@ -146,60 +302,69 @@ function App() {
       {/* Main recording area */}
       <main className="space-y-6">
         {/* Waveform and timer during recording */}
-        {recordingState === 'recording' && (
+        {isRecording && (
           <div className="text-center space-y-4">
             <WaveformVisualizer isRecording={true} />
             <RecordingTimer seconds={recordingDuration} />
           </div>
         )}
 
-        {/* Transcription area */}
-        <TranscriptionEditor
-          text={finalText}
-          liveText={liveText}
-          isRecording={recordingState === 'recording'}
-          isEditing={recordingState === 'editing'}
-          onTextChange={setFinalText}
-          onSend={handleSend}
-          onCancel={handleCancel}
-          isSending={isSending}
-        />
+        {/* Transcription editor */}
+        {showEditor && (
+          <TranscriptionEditor
+            text={isTextModeActive ? textModeText : finalText}
+            liveText={liveText}
+            isRecording={isRecording}
+            isEditing={isEditing && !autoSend}
+            isTextMode={isTextModeActive}
+            onTextChange={isTextModeActive ? setTextModeText : setFinalText}
+            onSend={isTextModeActive ? handleTextModeSend : () => handleSend()}
+            onCancel={handleCancel}
+            isSending={isSending}
+          />
+        )}
 
         {/* Record button */}
-        {recordingState !== 'editing' && (
+        {showButton && !isTextModeActive && (
           <div className="flex justify-center">
             <RecordButton
-              state={recordingState}
-              onStart={startRecording}
-              onStop={stopRecording}
-              disabled={isRecordingDisabled}
+              isRecording={isRecording}
+              mode={buttonMode}
+              disabled={isRecordingDisabled || isSending}
+              showSuccess={showSuccess}
+              onTap={handleButtonTap}
+              onDoubleTap={handleButtonDoubleTap}
             />
           </div>
         )}
 
+
         {/* Disabled reason hint */}
-        {isRecordingDisabled && recordingState === 'idle' && (
+        {isRecordingDisabled && recordingState === 'idle' && !isTextModeActive && (
           <p className="text-center text-gray-400 text-sm">
             {!isOnline
-              ? 'Sin conexion'
+              ? 'Sin conexion a internet'
               : !hasDevices
               ? 'No hay dispositivos conectados'
               : 'Conectando...'}
           </p>
         )}
 
-        {/* Queue list */}
-        <QueueList
-          items={queueItems}
-          onDelete={removeFromQueue}
-          isReplaying={isReplaying}
+        {/* History list */}
+        <HistoryList
+          items={historyItems}
+          onResend={handleHistoryResend}
+          onCopy={handleHistoryCopy}
+          onEdit={handleHistoryEdit}
+          onDelete={deleteHistoryItem}
+          isSending={historySendingId}
         />
       </main>
 
-      {/* Success feedback */}
-      <SuccessFeedback
-        show={showSuccess}
-        onComplete={() => setShowSuccess(false)}
+      {/* Toast for messages */}
+      <Toast
+        message={toastMessage}
+        onDismiss={() => setToastMessage(null)}
       />
     </div>
   );

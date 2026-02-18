@@ -31,14 +31,24 @@ export class ApiClient {
    * Accepts Segment[] payload for key action support.
    * Returns success response or error response per backend contract.
    */
-  async sendTranscription(deviceId: string, payload: Segment[]): Promise<ApiResponse> {
-    const response = await fetch(`${this.baseUrl}/transcription`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId, payload }),
-    });
+  async sendTranscription(deviceId: string, payload: Segment[], text: string): Promise<ApiResponse> {
+    const url = `${this.baseUrl}/transcription`;
+    console.log('[API] sendTranscription to:', url, 'deviceId:', deviceId);
 
-    return response.json() as Promise<ApiResponse>;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId, text, payload }),
+      });
+
+      const data = await response.json() as ApiResponse;
+      console.log('[API] sendTranscription response:', data);
+      return data;
+    } catch (error) {
+      console.error('[API] sendTranscription failed:', error);
+      throw error;
+    }
   }
 
   /**
@@ -49,7 +59,7 @@ export class ApiClient {
   async sendQueuedItem(item: QueuedTranscription): Promise<boolean> {
     try {
       const segments = parseToSegments(item.text);
-      const response = await this.sendTranscription(item.deviceId, segments);
+      const response = await this.sendTranscription(item.deviceId, segments, item.text);
       return response.success;
     } catch {
       // Network error or timeout

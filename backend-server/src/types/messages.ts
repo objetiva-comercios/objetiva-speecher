@@ -1,5 +1,5 @@
-// Key action types for Enter/Tab simulation
-export type KeyAction = 'enter' | 'tab';
+// Key action types for keyboard simulation
+export type KeyAction = 'enter' | 'tab' | 'up' | 'down' | 'left' | 'right' | 'home' | 'end';
 
 // Segment: discriminated union for type-safe payload handling
 export type Segment =

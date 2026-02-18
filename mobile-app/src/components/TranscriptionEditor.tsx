@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Clipboard } from '@capacitor/clipboard';
 
 interface TranscriptionEditorProps {
@@ -36,6 +36,7 @@ export function TranscriptionEditor({
   const [showPulse, setShowPulse] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevLiveTextRef = useRef<string>('');
+  const liveScrollRef = useRef<HTMLDivElement>(null);
 
   // Sync with prop when entering editing mode
   useEffect(() => {
@@ -94,13 +95,39 @@ export function TranscriptionEditor({
     }
   };
 
+  // Auto-scroll live text to bottom as new text arrives
+  useLayoutEffect(() => {
+    if (isRecording && liveScrollRef.current) {
+      liveScrollRef.current.scrollTop = liveScrollRef.current.scrollHeight;
+    }
+  }, [liveText, isRecording]);
+
   // Recording mode - show live text with visual feedback for command conversions
   if (isRecording) {
     return (
-      <div className={`rounded-lg p-4 min-h-24 transition-colors duration-150 ${showPulse ? 'bg-blue-50' : 'bg-gray-50'}`}>
-        <p className={`transition-colors duration-150 ${showPulse ? 'text-blue-600' : 'text-gray-700'}`}>
-          {liveText || <span className="text-gray-400 italic">Escuchando...</span>}
-        </p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 text-blue-600">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <circle cx="9" cy="12" r="5" />
+            <path strokeLinecap="round" d="M17 8.5a5.5 5.5 0 0 1 0 7" />
+            <path strokeLinecap="round" d="M20 6a9 9 0 0 1 0 12" />
+          </svg>
+          <span className="text-sm font-medium">Modo transcripcion</span>
+        </div>
+        <div
+          ref={liveScrollRef}
+          className={`rounded-lg p-4 h-[9.5rem] overflow-y-auto border transition-colors duration-150 ${showPulse ? 'bg-blue-50 border-blue-400' : 'bg-white border-blue-300'}`}
+        >
+          <p className={`transition-colors duration-150 ${showPulse ? 'text-blue-600' : 'text-gray-800'}`}>
+            {liveText || <span className="text-gray-400 italic">Escuchando...</span>}
+          </p>
+        </div>
       </div>
     );
   }
@@ -139,7 +166,7 @@ export function TranscriptionEditor({
             }}
             className="
               w-full p-4 rounded-lg border border-gray-300
-              focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+              focus:ring-0 focus:outline-none focus:border-orange-500
               min-h-[9.5rem] resize-none
               text-gray-800
               pr-14

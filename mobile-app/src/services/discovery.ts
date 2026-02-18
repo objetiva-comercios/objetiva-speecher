@@ -9,7 +9,7 @@ let backendUrl: string = PRODUCTION_BACKEND_URL;
 
 /**
  * Try to reach a backend at given URL.
- * Returns true if backend responds with valid JSON.
+ * Returns true if backend responds with valid Speecher health response.
  */
 async function tryBackendUrl(url: string): Promise<boolean> {
   try {
@@ -22,24 +22,43 @@ async function tryBackendUrl(url: string): Promise<boolean> {
     });
 
     clearTimeout(timeoutId);
-    return response.ok;
-  } catch {
+
+    if (!response.ok) return false;
+
+    // Verify it's actually a Speecher backend by checking response format
+    const data = await response.json();
+    console.log('[Discovery] Health response from', url, ':', JSON.stringify(data));
+    return data && data.status === 'ok';
+  } catch (err) {
+    console.log('[Discovery] Failed to reach', url, ':', err);
     return false;
   }
 }
 
 /**
  * Initialize discovery service.
- * With VPS backend, this just verifies the production URL is reachable.
- * Falls back to stored URL if production URL fails (for development).
+ * Priority: stored URL (development) > production URL
+ * This allows development override to take precedence.
  */
 export async function initializeDiscovery(): Promise<string | null> {
-  console.log('[Discovery] Initializing with VPS backend...');
+  console.log('[Discovery] Initializing...');
 
   // Check if there's a stored override URL (for development)
   const storedUrl = await getItem(STORAGE_KEYS.BACKEND_URL);
 
-  // Try production URL first
+  // Try stored URL first (development takes priority)
+  if (storedUrl) {
+    console.log('[Discovery] Checking stored URL:', storedUrl);
+    const storedWorks = await tryBackendUrl(storedUrl);
+    if (storedWorks) {
+      console.log('[Discovery] Stored URL works:', storedUrl);
+      backendUrl = storedUrl;
+      return storedUrl;
+    }
+    console.log('[Discovery] Stored URL failed');
+  }
+
+  // Try production URL
   console.log('[Discovery] Checking production URL:', PRODUCTION_BACKEND_URL);
   const productionWorks = await tryBackendUrl(PRODUCTION_BACKEND_URL);
 
@@ -47,17 +66,6 @@ export async function initializeDiscovery(): Promise<string | null> {
     console.log('[Discovery] Production backend reachable');
     backendUrl = PRODUCTION_BACKEND_URL;
     return PRODUCTION_BACKEND_URL;
-  }
-
-  // Production failed, try stored URL if exists (development fallback)
-  if (storedUrl) {
-    console.log('[Discovery] Production failed, trying stored URL:', storedUrl);
-    const storedWorks = await tryBackendUrl(storedUrl);
-    if (storedWorks) {
-      console.log('[Discovery] Stored URL works:', storedUrl);
-      backendUrl = storedUrl;
-      return storedUrl;
-    }
   }
 
   console.log('[Discovery] No reachable backend found');

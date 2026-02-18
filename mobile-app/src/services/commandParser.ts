@@ -68,6 +68,14 @@ const COMMANDS: CommandDef[] = [
  * Sorted by pattern length (longest first).
  */
 const KEY_COMMANDS: KeyCommandDef[] = [
+  // Navigation keys (tecla prefix to avoid conflicts with common words)
+  { patterns: ['tecla izquierda'], key: 'left' },
+  { patterns: ['tecla derecha'], key: 'right' },
+  { patterns: ['tecla arriba'], key: 'up' },
+  { patterns: ['tecla abajo'], key: 'down' },
+  { patterns: ['tecla inicio'], key: 'home' },
+  { patterns: ['tecla fin'], key: 'end' },
+  // Enter/Tab
   { patterns: ['nueva linea', 'nueva línea', 'enter'], key: 'enter' },
   { patterns: ['tabulador', 'tab'], key: 'tab' },
 ];
@@ -170,17 +178,11 @@ export function parseCommands(text: string): string {
   processed = processed.replace(/\u0003# */g, '#');
 
   // Step 5: Convert non-breaking space placeholders to regular spaces
-  // Collapse regular-space + NBSP or NBSP + regular-space to just NBSP
-  // This handles "hola espacio espacio adios" -> "hola NBSP NBSP adios"
-  // Note: Use [ ] for regular space only, not \s which includes NBSP
-  processed = processed.replace(/ +\u00A0/g, '\u00A0');
-  processed = processed.replace(/\u00A0 +/g, '\u00A0');
-  // Then convert NBSP to regular spaces
+  // NBSP placeholders preserve intentional spaces from "espacio" command
   processed = processed.replace(/\u00A0/g, ' ');
 
-  // Trim only if result is not just spaces (preserve explicit espacios)
-  const trimmed = processed.trim();
-  return trimmed === '' && processed.length > 0 ? processed : trimmed;
+  // Don't trim - preserve leading/trailing spaces from explicit "espacio" commands
+  return processed;
 }
 
 /**
@@ -207,10 +209,11 @@ function splitIntoSegments(text: string): Segment[] {
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    // Add text before match (if non-empty after trim)
+    // Add text before match (preserve spaces from "espacio" command)
     if (match.index > lastIndex) {
-      const textBefore = text.slice(lastIndex, match.index).trim();
-      if (textBefore) {
+      const textBefore = text.slice(lastIndex, match.index);
+      // Only add if has content (spaces count as content)
+      if (textBefore.length > 0) {
         segments.push({ type: 'text', value: textBefore });
       }
     }
@@ -235,10 +238,10 @@ function splitIntoSegments(text: string): Segment[] {
     lastIndex = regex.lastIndex;
   }
 
-  // Add remaining text
+  // Add remaining text (preserve spaces)
   if (lastIndex < text.length) {
-    const textAfter = text.slice(lastIndex).trim();
-    if (textAfter) {
+    const textAfter = text.slice(lastIndex);
+    if (textAfter.length > 0) {
       segments.push({ type: 'text', value: textAfter });
     }
   }
@@ -252,6 +255,7 @@ function splitIntoSegments(text: string): Segment[] {
  * Flow:
  * 1. Apply parseCommands() for punctuation/symbol replacement
  * 2. Detect key action commands (enter, tab) and split into segments
+ * 3. Add trailing space to last text segment
  *
  * @param text - Raw voice input
  * @returns Array of Segment (text or key action)
@@ -265,5 +269,19 @@ export function parseToSegments(text: string): Segment[] {
   const parsed = parseCommands(text);
 
   // Step 2: Split on key commands
-  return splitIntoSegments(parsed);
+  const segments = splitIntoSegments(parsed);
+
+  // Step 3: Add trailing space to the last text segment
+  // This ensures continuous dictation doesn't concatenate words
+  for (let i = segments.length - 1; i >= 0; i--) {
+    if (segments[i].type === 'text') {
+      const textSegment = segments[i] as { type: 'text'; value: string };
+      if (!textSegment.value.endsWith(' ')) {
+        textSegment.value += ' ';
+      }
+      break;
+    }
+  }
+
+  return segments;
 }
