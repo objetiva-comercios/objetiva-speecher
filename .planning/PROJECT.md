@@ -36,7 +36,16 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 
 ### Active
 
-(To be defined in next milestone)
+**Current Milestone: v1.2 Navigation & Settings**
+
+**Goal:** Add bottom navigation with 3 tabs (Historial, Speech, Config) and separate history/settings screens
+
+**Target features:**
+- Bottom navigation bar with center mic icon (large) and two side icons (small)
+- Speech tab (center, default) — current main screen with device selector and recording
+- Double tap on center mic icon enters text editing mode
+- History tab (left) — transcription history in its own screen
+- Config tab (right) — server URL, device info, app version
 
 ### Out of Scope
 - Custom phrase replacement system — future feature
@@ -87,4 +96,4 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 | xdotool uses X11 keysym names | enter → Return, tab → Tab | ✓ Good |
 
 ---
-*Last updated: 2026-03-23 after v1.1 milestone*
+*Last updated: 2026-03-23 after starting v1.2 milestone*
