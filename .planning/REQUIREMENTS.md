@@ -50,29 +50,29 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | — | Pending |
-| NAV-02 | — | Pending |
-| NAV-03 | — | Pending |
-| NAV-04 | — | Pending |
-| NAV-05 | — | Pending |
-| NAV-06 | — | Pending |
-| NAV-07 | — | Pending |
-| HIST-01 | — | Pending |
-| HIST-02 | — | Pending |
-| HIST-03 | — | Pending |
-| HIST-04 | — | Pending |
-| HIST-05 | — | Pending |
-| HIST-06 | — | Pending |
-| CFG-01 | — | Pending |
-| CFG-02 | — | Pending |
-| CFG-03 | — | Pending |
-| CFG-04 | — | Pending |
+| NAV-01 | Phase 7 | Pending |
+| NAV-02 | Phase 7 | Pending |
+| NAV-03 | Phase 7 | Pending |
+| NAV-04 | Phase 7 | Pending |
+| NAV-05 | Phase 7 | Pending |
+| NAV-06 | Phase 7 | Pending |
+| NAV-07 | Phase 7 | Pending |
+| HIST-01 | Phase 8 | Pending |
+| HIST-02 | Phase 8 | Pending |
+| HIST-03 | Phase 8 | Pending |
+| HIST-04 | Phase 8 | Pending |
+| HIST-05 | Phase 8 | Pending |
+| HIST-06 | Phase 8 | Pending |
+| CFG-01 | Phase 9 | Pending |
+| CFG-02 | Phase 9 | Pending |
+| CFG-03 | Phase 9 | Pending |
+| CFG-04 | Phase 9 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 17 total
-- Mapped to phases: 0
-- Unmapped: 17
+- Mapped to phases: 17
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Last updated: 2026-03-23 after roadmap phase mapping*

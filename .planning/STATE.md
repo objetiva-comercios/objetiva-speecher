@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Navigation & Settings
-status: defining_requirements
+status: ready_to_plan
 stopped_at: null
 last_updated: "2026-03-23"
-last_activity: 2026-03-23 — Milestone v1.2 started
+last_activity: 2026-03-23 — v1.2 roadmap created (Phases 7-9)
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** Instant, reliable voice-to-cursor flow under 2 seconds with zero manual intervention
-**Current focus:** v1.2 Navigation & Settings — Bottom nav, history tab, config screen
+**Current focus:** Phase 7 — Bottom Navigation & Tab Structure
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-23 — Milestone v1.2 started
+Phase: 7 of 9 (Bottom Navigation & Tab Structure)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-03-23 — v1.2 roadmap created
 
 ## Accumulated Context
 
