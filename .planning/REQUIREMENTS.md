@@ -11,7 +11,7 @@
 - [ ] **NAV-02**: Center tab has a large microphone icon and is the default active tab
 - [ ] **NAV-03**: Left tab has a small history icon (clock/list)
 - [ ] **NAV-04**: Right tab has a small settings icon (gear)
-- [ ] **NAV-05**: Tapping a tab switches the visible screen without page reload
+- [x] **NAV-05**: Tapping a tab switches the visible screen without page reload
 - [ ] **NAV-06**: Active tab is visually distinguished from inactive tabs
 - [ ] **NAV-07**: Double tap on center mic icon enters text editing mode
 
@@ -54,7 +54,7 @@
 | NAV-02 | Phase 7 | Pending |
 | NAV-03 | Phase 7 | Pending |
 | NAV-04 | Phase 7 | Pending |
-| NAV-05 | Phase 7 | Pending |
+| NAV-05 | Phase 7 | Complete |
 | NAV-06 | Phase 7 | Pending |
 | NAV-07 | Phase 7 | Pending |
 | HIST-01 | Phase 8 | Pending |
