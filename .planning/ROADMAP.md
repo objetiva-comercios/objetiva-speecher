@@ -46,7 +46,11 @@
   3. The center tab has a visually larger microphone icon and is selected by default on app launch
   4. The currently active tab is visually distinct from inactive tabs
   5. Double-tapping the center mic icon enters text editing mode
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 07-01-PLAN.md — BottomNavBar component with test infrastructure, icons, and recording pulse
+- [ ] 07-02-PLAN.md — Extract screen components (SpeechScreen, HistoryScreen, ConfigPlaceholder)
+- [ ] 07-03-PLAN.md — Create TabLayout, refactor App.tsx, wire tab switching and auto-stop
 
 ### Phase 8: History Screen
 **Goal**: Users can review, manage, and re-use past transcriptions from a dedicated history tab
@@ -80,10 +84,10 @@
 | 4. Linux Desktop Agent | v1.0 | 4/4 | Complete | 2026-02-11 |
 | 5. Command Parser & Text Symbols | v1.1 | 3/3 | Complete | 2026-02-12 |
 | 6. Key Actions Protocol | v1.1 | 5/5 | Complete | 2026-02-13 |
-| 7. Bottom Navigation & Tab Structure | v1.2 | 0/? | Not started | - |
+| 7. Bottom Navigation & Tab Structure | v1.2 | 0/3 | In progress | - |
 | 8. History Screen | v1.2 | 0/? | Not started | - |
 | 9. Config Screen | v1.2 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-03-23 (Milestone v1.2 roadmap created)*
+*Last updated: 2026-03-23 (Phase 7 planned — 3 plans in 2 waves)*
