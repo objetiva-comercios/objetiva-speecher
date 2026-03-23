@@ -85,7 +85,7 @@ describe('BottomNavBar', () => {
       render(<BottomNavBar {...defaultProps} activeTab="history" />);
       const historyTab = screen.getByRole('tab', { name: 'Historial' });
       const svg = historyTab.querySelector('svg');
-      expect(svg?.parentElement?.className ?? svg?.className ?? '').toMatch(/text-blue-500/);
+      expect(svg?.getAttribute('class') ?? '').toMatch(/text-blue-500/);
     });
 
     it('when activeTab="history", other tabs have aria-selected="false"', () => {
@@ -100,7 +100,7 @@ describe('BottomNavBar', () => {
       render(<BottomNavBar {...defaultProps} activeTab="history" />);
       const configTab = screen.getByRole('tab', { name: 'Configuracion' });
       const svg = configTab.querySelector('svg');
-      expect(svg?.parentElement?.className ?? svg?.className ?? '').toMatch(/text-gray-400/);
+      expect(svg?.getAttribute('class') ?? '').toMatch(/text-gray-400/);
     });
 
     it('when activeTab="speech", speech tab has aria-selected="true"', () => {

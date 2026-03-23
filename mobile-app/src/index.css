@@ -7,3 +7,23 @@
   --sal: env(safe-area-inset-left, 0px);
   --sar: env(safe-area-inset-right, 0px);
 }
+
+/* Recording pulse animation for center mic FAB */
+@keyframes nav-mic-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    transform: scale(1.08);
+  }
+}
+.animate-nav-mic-pulse {
+  animation: nav-mic-pulse 1.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-nav-mic-pulse {
+    animation: none;
+  }
+}
