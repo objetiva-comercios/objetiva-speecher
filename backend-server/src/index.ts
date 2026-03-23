@@ -5,6 +5,7 @@ import { transcriptionRoute } from './routes/transcription.js';
 import { devicesRoute } from './routes/devices.js';
 import { createWebSocketHandler } from './websocket/handler.js';
 import { startHeartbeat, stopHeartbeat } from './websocket/heartbeat.js';
+import { startMdnsAdvertisement, stopMdnsAdvertisement } from './services/mdns.js';
 
 // Configuration (can be overridden via environment)
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -47,6 +48,7 @@ fastify.get('/health', async () => {
 // Start heartbeat when server is ready
 fastify.addHook('onReady', async () => {
   startHeartbeat(fastify.log);
+  startMdnsAdvertisement(PORT, fastify.log);
   fastify.log.info({ production: IS_PRODUCTION }, 'Server ready, heartbeat started');
 });
 
@@ -54,6 +56,7 @@ fastify.addHook('onReady', async () => {
 const shutdown = async (signal: string) => {
   fastify.log.info({ signal }, 'Received shutdown signal');
   stopHeartbeat();
+  stopMdnsAdvertisement(fastify.log);
   await fastify.close();
   process.exit(0);
 };
