@@ -2,9 +2,9 @@
 
 ## What This Is
 
-A voice-to-text system that lets you dictate from your Android phone and have the transcribed text instantly auto-paste at the cursor position on a selected PC (Windows or Linux). Designed for personal productivity when you're away from the keyboard but need to input text. Works entirely on your local network with no cloud dependencies.
+A voice-to-text system that lets you dictate from your Android phone and have the transcribed text instantly auto-paste at the cursor position on a selected PC (Windows or Linux). Supports Spanish voice commands for punctuation, symbols, and keyboard actions (Enter, Tab). Works entirely on your local network with no cloud dependencies.
 
-**Current State:** v1.0 shipped with full Android → Windows/Linux flow working.
+**Current State:** v1.1 shipped — full voice-to-cursor flow with command parsing and key actions.
 
 ## Core Value
 
@@ -27,41 +27,39 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 - Backend manages WebSocket connections and message routing — v1.0
 - Windows agent with robotjs keyboard simulation — v1.0
 - Linux agent with xdotool keyboard simulation — v1.0
+- Parse voice commands in mobile app before sending — v1.1
+- Support punctuation commands (punto, coma, dos puntos, etc.) — v1.1
+- Support "nueva linea" / "enter" to insert Enter key — v1.1
+- Support "tabulador" / "tab" to insert Tab key — v1.1
+- Support "espacio" for explicit space insertion — v1.1
+- Command words replaced with their symbols — v1.1
 
 ### Active
 
-**Current Milestone: v1.1 Special Commands**
-
-**Goal:** Add voice commands for special keys and punctuation (Enter, Tab, punto, coma, etc.)
-
-**Target features:**
-- Parse voice commands in mobile app before sending
-- Support "nueva línea" / "enter" to insert Enter key
-- Support "tabulador" / "tab" to insert Tab key
-- Support punctuation commands (punto, coma, dos puntos, etc.)
-- Support "espacio" for explicit space insertion
-- Command words replaced with their symbols (e.g., "punto" → ".")
+(To be defined in next milestone)
 
 ### Out of Scope
-- Custom phrase replacement system — v2 feature, needs configuration approach
-- Multi-language support beyond es-AR — v2 feature
+- Custom phrase replacement system — future feature
+- Multi-language support beyond es-AR — future feature
 - Authentication/authorization — single user on private network, not needed
 - Cloud/internet deployment — local network only
 - iOS support — Android only
-- macOS support — v2 feature, different automation APIs
-- Linux Wayland support — v2 feature, ydotool
+- macOS support — different automation APIs
+- Linux Wayland support — ydotool needed
 
 ## Context
 
-**Shipped v1.0 with:**
-- 4,765 lines of TypeScript
+**Shipped v1.1 with:**
 - Backend (Fastify + WebSocket), Windows agent (robotjs), Linux agent (xdotool), Mobile app (Capacitor + React)
-- 5 days development (2026-02-06 → 2026-02-11)
+- Command parser with 23 Spanish voice commands, 63 tests
+- Segment/KeyAction protocol for keyboard action simulation
+- mDNS auto-discovery with production fallback
+- Production backend at speecher.objetiva.com.ar
 
 **Technical environment:**
 - 1-5 Windows/Linux PCs on local network
 - Android phone (Capacitor app)
-- All devices on same WiFi
+- All devices on same WiFi or via production VPS
 
 ## Constraints
 
@@ -69,7 +67,7 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 - **Platform**: Android only for mobile, Windows/Linux for agents
 - **Speech API**: Android SpeechRecognizer only, no paid APIs
 - **Language**: Spanish (es-AR) for v1
-- **Network**: Local network only
+- **Network**: Local network + production VPS fallback
 
 ## Key Decisions
 
@@ -77,17 +75,16 @@ Instant, reliable voice-to-cursor flow. From the moment you finish dictating to 
 |----------|-----------|---------|
 | Always auto-paste (no manual trigger) | Speed matters most; undo is acceptable | ✓ Good |
 | Paste anywhere (no app whitelisting) | Simplicity over safety | ✓ Good |
-| Silent success (no mobile feedback) | Minimize friction in dictation flow | ✓ Good |
 | Queue and retry on connection drops | Reliability requirement | ✓ Good |
 | Hostname-based device naming | Simple, automatic | ✓ Good |
 | @jitsi/robotjs for Windows | nut-tree requires paid registry | ✓ Good |
 | xdotool spawn for Linux | No native compilation needed | ✓ Good |
 | mDNS with fallback to stored URL | Handle discovery failures | ✓ Good |
-| Discriminated union for API responses | Type safety | ✓ Good |
-| Duplicate types per agent | Simplicity over shared package | — Pending review |
-
-| Parse commands in mobile app | Simpler than backend/agent, no protocol changes | — Pending |
-| Replace command words with symbols | "punto" → "." (not append) | — Pending |
+| Parse commands in mobile app | Simplest, no backend/agent changes for Phase 5 | ✓ Good |
+| Replace command words with symbols | "punto" → "." (not append) | ✓ Good |
+| Segment discriminated union | Type-safe exhaustive pattern matching | ✓ Good |
+| Pass-through pattern for payload | Backend stores/forwards, agents interpret | ✓ Good |
+| xdotool uses X11 keysym names | enter → Return, tab → Tab | ✓ Good |
 
 ---
-*Last updated: 2026-02-12 after starting v1.1 milestone*
+*Last updated: 2026-03-23 after v1.1 milestone*
