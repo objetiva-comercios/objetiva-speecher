@@ -18,7 +18,6 @@ export function HistoryList({
   onDelete,
   isSending,
 }: HistoryListProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   // Track which item has actions visible (only one at a time)
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
@@ -41,44 +40,21 @@ export function HistoryList({
   };
 
   return (
-    <div className="mt-6">
-      {/* Collapsible header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between py-2 text-gray-600"
-      >
-        <span className="text-sm font-medium">
-          Historial ({items.length})
-        </span>
-        <svg
-          className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {/* List */}
-      {isExpanded && (
-        <div className="space-y-2 mt-2">
-          {items.map((item) => (
-            <HistoryItemCard
-              key={item.id}
-              item={item}
-              showActions={expandedItemId === item.id}
-              onTap={() => handleItemTap(item.id)}
-              onResend={() => onResend(item)}
-              onCopy={() => onCopy(item)}
-              onEdit={() => onEdit(item)}
-              onDelete={() => onDelete(item.id)}
-              isSending={isSending === item.id}
-              formatTime={formatTime}
-            />
-          ))}
-        </div>
-      )}
+    <div className="space-y-2">
+      {items.map((item) => (
+        <HistoryItemCard
+          key={item.id}
+          item={item}
+          showActions={expandedItemId === item.id}
+          onTap={() => handleItemTap(item.id)}
+          onResend={() => onResend(item)}
+          onCopy={() => onCopy(item)}
+          onEdit={() => onEdit(item)}
+          onDelete={() => onDelete(item.id)}
+          isSending={isSending === item.id}
+          formatTime={formatTime}
+        />
+      ))}
     </div>
   );
 }

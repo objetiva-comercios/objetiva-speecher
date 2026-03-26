@@ -173,7 +173,7 @@ export function TranscriptionEditor({
             "
             placeholder={isTextMode ? "Escribe o pega texto aqui..." : "Edita el texto aqui..."}
             disabled={isSending}
-            autoFocus={isTextMode}
+            autoFocus={false}
           />
           {/* Right side action buttons - vertical column */}
           {isTextMode && (

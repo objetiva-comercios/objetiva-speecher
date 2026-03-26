@@ -36,9 +36,14 @@ export function useNetworkStatus(
     // Start monitoring with callbacks
     startNetworkMonitoring(
       () => {
-        // Mark as reconnecting, then call onOnline
+        // Mark as reconnecting briefly, then clear once callback completes
         setReconnecting(true);
-        onOnline?.();
+        if (onOnline) {
+          Promise.resolve(onOnline()).finally(() => setReconnecting(false));
+        } else {
+          // No callback — clear reconnecting after a brief delay
+          setTimeout(() => setReconnecting(false), 2000);
+        }
       },
       () => {
         onOffline?.();

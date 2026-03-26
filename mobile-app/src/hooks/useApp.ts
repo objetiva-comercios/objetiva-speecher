@@ -10,6 +10,7 @@ interface UseAppResult {
   error: string | null;
   backendUrl: string | null;
   setManualUrl: (url: string) => Promise<void>;
+  retry: () => Promise<void>;
   isReady: boolean;
 }
 
@@ -22,41 +23,56 @@ export function useApp(): UseAppResult {
   const [error, setError] = useState<string | null>(null);
   const [backendUrl, setBackendUrl] = useState<string | null>(null);
 
+  // Core discovery logic — reusable for init and retry
+  const runDiscovery = useCallback(async () => {
+    try {
+      setState('initializing');
+      setError(null);
+
+      const url = await initializeDiscovery();
+
+      if (url) {
+        initApiClient(url);
+        setBackendUrl(url);
+
+        const api = getApiClient();
+        const healthy = await api.healthCheck();
+
+        if (healthy) {
+          setState('ready');
+          return true;
+        } else {
+          setState('configuring');
+          setError('No se puede conectar al servidor');
+          return false;
+        }
+      } else {
+        setState('configuring');
+        return false;
+      }
+    } catch (err: any) {
+      setError(err.message || 'Error de inicializacion');
+      setState('error');
+      return false;
+    }
+  }, []);
+
   // Initialize on mount
   useEffect(() => {
-    const init = async () => {
-      try {
-        setState('initializing');
+    runDiscovery();
+  }, [runDiscovery]);
 
-        // Attempt discovery (mDNS or stored URL)
-        const url = await initializeDiscovery();
+  // Auto-retry every 15s while in configuring state
+  useEffect(() => {
+    if (state !== 'configuring') return;
 
-        if (url) {
-          initApiClient(url);
-          setBackendUrl(url);
+    const interval = setInterval(() => {
+      console.log('[useApp] Auto-retry discovery...');
+      runDiscovery();
+    }, 15000);
 
-          // Verify backend is reachable
-          const api = getApiClient();
-          const healthy = await api.healthCheck();
-
-          if (healthy) {
-            setState('ready');
-          } else {
-            setState('configuring');
-            setError('No se puede conectar al servidor');
-          }
-        } else {
-          // No backend found - need manual config
-          setState('configuring');
-        }
-      } catch (err: any) {
-        setError(err.message || 'Error de inicializacion');
-        setState('error');
-      }
-    };
-
-    init();
-  }, []);
+    return () => clearInterval(interval);
+  }, [state, runDiscovery]);
 
   // Set manual backend URL
   const setManualUrl = useCallback(async (url: string) => {
@@ -85,6 +101,7 @@ export function useApp(): UseAppResult {
     error,
     backendUrl,
     setManualUrl,
+    retry: async () => { await runDiscovery(); },
     isReady: state === 'ready',
   };
 }

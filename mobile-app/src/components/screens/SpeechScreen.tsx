@@ -1,9 +1,8 @@
+import { Mic, Clock, Settings, PenLine } from 'lucide-react';
 import type { Device, ConnectionStatus } from '../../types';
-import type { ButtonMode } from '../RecordButton';
 
 import { DeviceSelector } from '../DeviceSelector';
 import { StatusIndicator } from '../StatusIndicator';
-import { RecordButton } from '../RecordButton';
 import { RecordingTimer } from '../RecordingTimer';
 import { WaveformVisualizer } from '../WaveformVisualizer';
 import { TranscriptionEditor } from '../TranscriptionEditor';
@@ -24,18 +23,13 @@ export interface SpeechScreenProps {
   liveText: string;
   finalText: string;
 
-  // Button state
-  buttonMode: ButtonMode;
-  showSuccess: boolean;
+  // UI state
   isRecordingDisabled: boolean;
   isSending: boolean;
   isTextModeActive: boolean;
   textModeText: string;
 
   // Handlers
-  onButtonTap: () => void;
-  onButtonDoubleTap: () => void;
-  onTextChange: (text: string) => void;
   onSend: () => void;
   onCancel: () => void;
   onTextModeTextChange: (text: string) => void;
@@ -54,23 +48,15 @@ export function SpeechScreen({
   recordingDuration,
   liveText,
   finalText,
-  buttonMode,
-  showSuccess,
   isRecordingDisabled,
   isSending,
   isTextModeActive,
   textModeText,
-  onButtonTap,
-  onButtonDoubleTap,
-  onTextChange,
   onSend,
   onCancel,
   onTextModeTextChange,
   onSetFinalText,
 }: SpeechScreenProps) {
-  const isEditing = recordingState === 'editing';
-  const showEditor = isRecording || isTextModeActive;
-  const showButton = !isEditing || isTextModeActive;
   const hasDevices = devices.length > 0;
 
   return (
@@ -80,10 +66,11 @@ export function SpeechScreen({
       paddingRight: 'calc(1rem + var(--sar, 0px))',
     }}>
       {/* Header with device selector and status */}
-      <header className="mb-6 px-4 pt-4">
-        <h1 className="text-xl font-bold text-gray-800 mb-4 text-center">
+      <header className="mb-6 px-4 pt-6">
+        <h1 className="text-2xl font-bold text-gray-900 text-center tracking-tight">
           Speecher
         </h1>
+        <p className="text-sm text-gray-400 text-center mt-1 mb-4 italic">Habla ahora o calla para siempre</p>
 
         {/* Device selector */}
         <DeviceSelector
@@ -93,47 +80,46 @@ export function SpeechScreen({
           isLoading={devicesLoading}
           disabled={!isOnline}
         />
-        <div className="flex justify-end mt-1">
+        <div className="flex justify-center mt-1">
           <StatusIndicator status={networkStatus} />
         </div>
       </header>
 
-      {/* Main recording area */}
+      {/* Main content area */}
       <main className="space-y-6 px-4">
-        {/* Waveform and timer during recording */}
-        {isRecording && (
-          <div className="text-center space-y-4">
-            <WaveformVisualizer isRecording={true} />
-            <RecordingTimer seconds={recordingDuration} />
-          </div>
-        )}
-
-        {/* Transcription editor */}
-        {showEditor && (
+        {/* Text mode editor */}
+        {isTextModeActive && (
           <TranscriptionEditor
-            text={isTextModeActive ? textModeText : finalText}
+            text={textModeText}
             liveText={liveText}
-            isRecording={isRecording}
+            isRecording={false}
             isEditing={false}
-            isTextMode={isTextModeActive}
-            onTextChange={isTextModeActive ? onTextModeTextChange : onSetFinalText}
+            isTextMode={true}
+            onTextChange={onTextModeTextChange}
             onSend={onSend}
             onCancel={onCancel}
             isSending={isSending}
           />
         )}
 
-        {/* Record button */}
-        {showButton && !isTextModeActive && (
-          <div className="flex justify-center">
-            <RecordButton
-              isRecording={isRecording}
-              mode={buttonMode}
-              disabled={isRecordingDisabled || isSending}
-              showSuccess={showSuccess}
-              onTap={onButtonTap}
-              onDoubleTap={onButtonDoubleTap}
+        {/* Waveform, timer, and live transcription during recording */}
+        {isRecording && (
+          <div className="space-y-4">
+            <TranscriptionEditor
+              text={finalText}
+              liveText={liveText}
+              isRecording={true}
+              isEditing={false}
+              isTextMode={false}
+              onTextChange={onSetFinalText}
+              onSend={onSend}
+              onCancel={onCancel}
+              isSending={isSending}
             />
+            <div className="text-center space-y-4">
+              <WaveformVisualizer isRecording={true} />
+              <RecordingTimer seconds={recordingDuration} />
+            </div>
           </div>
         )}
 
@@ -146,6 +132,31 @@ export function SpeechScreen({
               ? 'No hay dispositivos conectados'
               : 'Conectando...'}
           </p>
+        )}
+
+        {/* Usage hints - shown when idle and not in text mode */}
+        {recordingState === 'idle' && !isTextModeActive && (
+          <div className="mt-14 space-y-4 max-w-xs mx-auto text-center">
+            <p className="text-xs font-semibold text-gray-300 uppercase tracking-widest">Instrucciones</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-2 text-gray-400">
+                <Mic size={16} className="flex-shrink-0 text-blue-400" />
+                <span className="text-sm">Tap en el microfono para hablar</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-gray-400">
+                <PenLine size={16} className="flex-shrink-0 text-orange-400" />
+                <span className="text-sm">Doble tap para modo redaccion</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-gray-400">
+                <Clock size={16} className="flex-shrink-0" />
+                <span className="text-sm">&larr; Historial de envios</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-gray-400">
+                <Settings size={16} className="flex-shrink-0" />
+                <span className="text-sm">Configuracion &rarr;</span>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>

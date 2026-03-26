@@ -7,14 +7,19 @@ describe('BottomNavBar', () => {
     activeTab: 'speech' as const,
     onTabChange: vi.fn(),
     isRecording: false,
-    onCenterDoubleTap: vi.fn(),
+    isTextModeActive: false,
+    isRecordingDisabled: false,
+    onStartRecording: vi.fn(),
+    onStopRecording: vi.fn(),
+    onEnterTextMode: vi.fn(),
+    onCancelTextMode: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('NAV-01: renders tablist with 3 tabs', () => {
+  describe('renders tablist with 3 tabs', () => {
     it('renders a nav element with role="tablist"', () => {
       render(<BottomNavBar {...defaultProps} />);
       const nav = screen.getByRole('tablist');
@@ -29,145 +34,72 @@ describe('BottomNavBar', () => {
     });
   });
 
-  describe('NAV-02: center tab has Mic icon with blue circle', () => {
-    it('center button has aria-label="Voz"', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-      expect(centerTab).toBeInTheDocument();
-    });
-
-    it('center button contains an SVG (Mic icon)', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-      const svg = centerTab.querySelector('svg');
-      expect(svg).toBeInTheDocument();
-    });
-  });
-
-  describe('NAV-03: left tab has Clock icon', () => {
-    it('left button has aria-label="Historial"', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const leftTab = screen.getByRole('tab', { name: 'Historial' });
-      expect(leftTab).toBeInTheDocument();
-    });
-
-    it('left button contains an SVG (Clock icon)', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const leftTab = screen.getByRole('tab', { name: 'Historial' });
-      const svg = leftTab.querySelector('svg');
-      expect(svg).toBeInTheDocument();
-    });
-  });
-
-  describe('NAV-04: right tab has Settings icon', () => {
-    it('right button has aria-label="Configuracion"', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const rightTab = screen.getByRole('tab', { name: 'Configuracion' });
-      expect(rightTab).toBeInTheDocument();
-    });
-
-    it('right button contains an SVG (Settings icon)', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const rightTab = screen.getByRole('tab', { name: 'Configuracion' });
-      const svg = rightTab.querySelector('svg');
-      expect(svg).toBeInTheDocument();
-    });
-  });
-
-  describe('NAV-06: active tab styling', () => {
-    it('when activeTab="history", history tab has aria-selected="true"', () => {
+  describe('center FAB color states', () => {
+    it('is gray when on non-speech tab (inactive)', () => {
       render(<BottomNavBar {...defaultProps} activeTab="history" />);
-      const historyTab = screen.getByRole('tab', { name: 'Historial' });
-      expect(historyTab).toHaveAttribute('aria-selected', 'true');
+      const fab = screen.getByRole('tab', { name: /speecher|voz|grabacion/i });
+      expect(fab.className).toMatch(/bg-gray-700/);
     });
 
-    it('when activeTab="history", history icon has text-blue-500 class', () => {
-      render(<BottomNavBar {...defaultProps} activeTab="history" />);
-      const historyTab = screen.getByRole('tab', { name: 'Historial' });
-      const svg = historyTab.querySelector('svg');
-      expect(svg?.getAttribute('class') ?? '').toMatch(/text-blue-500/);
-    });
-
-    it('when activeTab="history", other tabs have aria-selected="false"', () => {
-      render(<BottomNavBar {...defaultProps} activeTab="history" />);
-      const speechTab = screen.getByRole('tab', { name: 'Voz' });
-      const configTab = screen.getByRole('tab', { name: 'Configuracion' });
-      expect(speechTab).toHaveAttribute('aria-selected', 'false');
-      expect(configTab).toHaveAttribute('aria-selected', 'false');
-    });
-
-    it('when activeTab="history", inactive icons have text-gray-400', () => {
-      render(<BottomNavBar {...defaultProps} activeTab="history" />);
-      const configTab = screen.getByRole('tab', { name: 'Configuracion' });
-      const svg = configTab.querySelector('svg');
-      expect(svg?.getAttribute('class') ?? '').toMatch(/text-gray-400/);
-    });
-
-    it('when activeTab="speech", speech tab has aria-selected="true"', () => {
+    it('is blue when on speech tab and idle', () => {
       render(<BottomNavBar {...defaultProps} activeTab="speech" />);
-      const speechTab = screen.getByRole('tab', { name: 'Voz' });
-      expect(speechTab).toHaveAttribute('aria-selected', 'true');
+      const fab = screen.getByRole('tab', { name: /grabacion/i });
+      expect(fab.className).toMatch(/bg-blue-500/);
+    });
+
+    it('is red when recording', () => {
+      render(<BottomNavBar {...defaultProps} isRecording={true} />);
+      const fab = screen.getByRole('tab', { name: /detener/i });
+      expect(fab.className).toMatch(/bg-red-500/);
+    });
+
+    it('is orange when in text mode', () => {
+      render(<BottomNavBar {...defaultProps} isTextModeActive={true} />);
+      const fab = screen.getByRole('tab', { name: /redaccion/i });
+      expect(fab.className).toMatch(/bg-orange-500/);
     });
   });
 
-  describe('NAV-07: double-tap on center mic', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
+  describe('FAB single tap behavior', () => {
+    beforeEach(() => { vi.useFakeTimers(); });
+    afterEach(() => { vi.useRealTimers(); });
 
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('double-click on center mic calls onCenterDoubleTap', () => {
-      render(<BottomNavBar {...defaultProps} />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-
-      // First click
-      fireEvent.click(centerTab);
-      // Second click within 300ms window
-      fireEvent.click(centerTab);
-
-      expect(defaultProps.onCenterDoubleTap).toHaveBeenCalledTimes(1);
-    });
-
-    it('single click on center mic calls onTabChange("speech") after delay', () => {
+    it('from inactive: navigates to speech', () => {
       render(<BottomNavBar {...defaultProps} activeTab="history" />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-
-      fireEvent.click(centerTab);
-
-      // Before timeout, onTabChange should not be called
-      expect(defaultProps.onTabChange).not.toHaveBeenCalled();
-
-      // After 300ms, single tap resolves
-      act(() => {
-        vi.advanceTimersByTime(300);
-      });
-
+      const fab = screen.getByRole('tab', { name: /speecher/i });
+      fireEvent.click(fab);
+      act(() => { vi.advanceTimersByTime(300); });
       expect(defaultProps.onTabChange).toHaveBeenCalledWith('speech');
     });
-  });
 
-  describe('Recording pulse animation', () => {
-    it('when isRecording=true, center mic circle has animate-nav-mic-pulse class', () => {
+    it('from idle: starts recording', () => {
+      render(<BottomNavBar {...defaultProps} activeTab="speech" />);
+      const fab = screen.getByRole('tab', { name: /grabacion/i });
+      fireEvent.click(fab);
+      act(() => { vi.advanceTimersByTime(300); });
+      expect(defaultProps.onStartRecording).toHaveBeenCalled();
+    });
+
+    it('from recording: stops recording', () => {
       render(<BottomNavBar {...defaultProps} isRecording={true} />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-      // The pulse class should be on the FAB circle div or the button itself
-      const fabCircle = centerTab.querySelector('.animate-nav-mic-pulse') ?? centerTab;
-      expect(fabCircle.className).toMatch(/animate-nav-mic-pulse/);
-    });
-
-    it('when isRecording=false, center mic circle does NOT have animate-nav-mic-pulse', () => {
-      render(<BottomNavBar {...defaultProps} isRecording={false} />);
-      const centerTab = screen.getByRole('tab', { name: 'Voz' });
-      const container = centerTab.closest('nav');
-      const pulseElements = container?.querySelectorAll('.animate-nav-mic-pulse');
-      expect(pulseElements?.length ?? 0).toBe(0);
+      const fab = screen.getByRole('tab', { name: /detener/i });
+      fireEvent.click(fab);
+      act(() => { vi.advanceTimersByTime(300); });
+      expect(defaultProps.onStopRecording).toHaveBeenCalled();
     });
   });
 
-  describe('Tab click navigation', () => {
+  describe('FAB double tap behavior', () => {
+    it('from idle: enters text mode', () => {
+      render(<BottomNavBar {...defaultProps} activeTab="speech" />);
+      const fab = screen.getByRole('tab', { name: /grabacion/i });
+      fireEvent.click(fab);
+      fireEvent.click(fab);
+      expect(defaultProps.onEnterTextMode).toHaveBeenCalled();
+    });
+  });
+
+  describe('side tab navigation', () => {
     it('clicking history tab calls onTabChange("history")', () => {
       render(<BottomNavBar {...defaultProps} />);
       const historyTab = screen.getByRole('tab', { name: 'Historial' });
@@ -180,6 +112,21 @@ describe('BottomNavBar', () => {
       const configTab = screen.getByRole('tab', { name: 'Configuracion' });
       fireEvent.click(configTab);
       expect(defaultProps.onTabChange).toHaveBeenCalledWith('config');
+    });
+  });
+
+  describe('recording pulse animation', () => {
+    it('when recording, FAB has animate-nav-mic-pulse class', () => {
+      render(<BottomNavBar {...defaultProps} isRecording={true} />);
+      const fab = screen.getByRole('tab', { name: /detener/i });
+      expect(fab.className).toMatch(/animate-nav-mic-pulse/);
+    });
+
+    it('when not recording, FAB does NOT have pulse class', () => {
+      render(<BottomNavBar {...defaultProps} isRecording={false} />);
+      const container = screen.getByRole('tablist');
+      const pulseElements = container.querySelectorAll('.animate-nav-mic-pulse');
+      expect(pulseElements.length).toBe(0);
     });
   });
 });

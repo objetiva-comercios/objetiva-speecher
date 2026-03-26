@@ -2,7 +2,13 @@ import { getJSON, setJSON } from './storage';
 import type { HistoryItem } from '../types';
 
 const HISTORY_KEY = 'speecher_history';
-const MAX_HISTORY_ITEMS = 5;
+const SETTINGS_KEY = 'speecher_settings';
+const DEFAULT_MAX_HISTORY = 20;
+
+async function getMaxHistoryItems(): Promise<number> {
+  const settings = await getJSON<{ maxHistoryItems?: number }>(SETTINGS_KEY);
+  return settings?.maxHistoryItems ?? DEFAULT_MAX_HISTORY;
+}
 
 /**
  * Get all history items from storage
@@ -16,8 +22,8 @@ export async function getHistory(): Promise<HistoryItem[]> {
  * Save history items to storage
  */
 export async function saveHistory(items: HistoryItem[]): Promise<void> {
-  // Keep only the most recent items
-  const trimmed = items.slice(0, MAX_HISTORY_ITEMS);
+  const max = await getMaxHistoryItems();
+  const trimmed = items.slice(0, max);
   await setJSON(HISTORY_KEY, trimmed);
 }
 

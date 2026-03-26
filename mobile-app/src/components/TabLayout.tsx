@@ -6,8 +6,6 @@ import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { getApiClient, isApiClientInitialized } from '../services/api';
 import { parseToSegments } from '../services/commandParser';
 import type { HistoryItem } from '../types/index';
-import type { ButtonMode } from './RecordButton';
-
 import { BottomNavBar, type TabId } from './BottomNavBar';
 import { SpeechScreen } from './screens/SpeechScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -24,7 +22,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [buttonMode, setButtonMode] = useState<ButtonMode>('voice');
   const [textModeText, setTextModeText] = useState('');
   const [isTextModeActive, setIsTextModeActive] = useState(false);
 
@@ -97,7 +94,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
             setShowSuccess(false);
             setIsTextModeActive(false);
             setTextModeText('');
-            setButtonMode('voice');
           }, 500);
         }
       } else {
@@ -107,7 +103,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
         if (wasTextMode) {
           setIsTextModeActive(false);
           setTextModeText('');
-          setButtonMode('voice');
         }
       }
     } catch {
@@ -117,7 +112,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
       if (wasTextMode) {
         setIsTextModeActive(false);
         setTextModeText('');
-        setButtonMode('voice');
       }
     } finally {
       setIsSending(false);
@@ -138,7 +132,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
     if (isTextModeActive) {
       setIsTextModeActive(false);
       setTextModeText('');
-      setButtonMode('voice');
     }
   }, [clearError, resetToIdle, isTextModeActive]);
 
@@ -152,17 +145,8 @@ export function TabLayout({ isReady }: TabLayoutProps) {
 
   // === Button handlers ===
 
-  const handleButtonTap = useCallback(() => {
-    if (recordingState === 'recording') {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  }, [recordingState, startRecording, stopRecording]);
-
-  const handleButtonDoubleTap = useCallback(() => {
+  const handleEnterTextMode = useCallback(() => {
     if (recordingState === 'idle') {
-      setButtonMode('text');
       setIsTextModeActive(true);
       setTextModeText('');
     }
@@ -193,7 +177,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
   // Edit history item: switch to speech tab and open text mode
   const handleHistoryEdit = useCallback((item: HistoryItem) => {
     setActiveTab('speech');
-    setButtonMode('text');
     setIsTextModeActive(true);
     setTextModeText(item.text);
   }, []);
@@ -207,16 +190,6 @@ export function TabLayout({ isReady }: TabLayoutProps) {
     setActiveTab(newTab);
   }, [activeTab, recordingState, stopRecording]);
 
-  const handleCenterDoubleTap = useCallback(() => {
-    if (activeTab !== 'speech') {
-      setActiveTab('speech');
-    }
-    if (recordingState === 'idle') {
-      setButtonMode('text');
-      setIsTextModeActive(true);
-      setTextModeText('');
-    }
-  }, [activeTab, recordingState]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -224,8 +197,8 @@ export function TabLayout({ isReady }: TabLayoutProps) {
       <OfflineBanner status={networkStatus} />
 
       {/* Tab content area - all mounted, visibility toggled */}
-      <main className="flex-1 overflow-y-auto">
-        <div role="tabpanel" aria-label="Historial" className={activeTab === 'history' ? 'block' : 'hidden'}>
+      <main className="flex-1 overflow-hidden">
+        <div role="tabpanel" aria-label="Historial" className={`h-full ${activeTab === 'history' ? 'flex flex-col' : 'hidden'}`}>
           <HistoryScreen
             items={historyItems}
             onResend={handleHistoryResend}
@@ -235,7 +208,7 @@ export function TabLayout({ isReady }: TabLayoutProps) {
             isSending={historySendingId}
           />
         </div>
-        <div role="tabpanel" aria-label="Voz" className={activeTab === 'speech' ? 'block' : 'hidden'}>
+        <div role="tabpanel" aria-label="Voz" className={`h-full overflow-y-auto ${activeTab === 'speech' ? 'block' : 'hidden'}`}>
           <SpeechScreen
             devices={devices}
             selectedDevice={selectedDevice}
@@ -248,32 +221,32 @@ export function TabLayout({ isReady }: TabLayoutProps) {
             recordingDuration={recordingDuration}
             liveText={liveText}
             finalText={finalText}
-            buttonMode={buttonMode}
-            showSuccess={showSuccess}
             isRecordingDisabled={isRecordingDisabled}
             isSending={isSending}
             isTextModeActive={isTextModeActive}
             textModeText={textModeText}
-            onButtonTap={handleButtonTap}
-            onButtonDoubleTap={handleButtonDoubleTap}
-            onTextChange={isTextModeActive ? setTextModeText : setFinalText}
             onSend={isTextModeActive ? handleTextModeSend : () => handleSend()}
             onCancel={handleCancel}
             onTextModeTextChange={setTextModeText}
             onSetFinalText={setFinalText}
           />
         </div>
-        <div role="tabpanel" aria-label="Configuracion" className={activeTab === 'config' ? 'block' : 'hidden'}>
+        <div role="tabpanel" aria-label="Configuracion" className={`h-full overflow-y-auto ${activeTab === 'config' ? 'block' : 'hidden'}`}>
           <ConfigPlaceholder />
         </div>
       </main>
 
-      {/* Bottom navigation */}
+      {/* Bottom navigation — multifunctional FAB */}
       <BottomNavBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
         isRecording={isRecording}
-        onCenterDoubleTap={handleCenterDoubleTap}
+        isTextModeActive={isTextModeActive}
+        isRecordingDisabled={isRecordingDisabled}
+        onStartRecording={startRecording}
+        onStopRecording={stopRecording}
+        onEnterTextMode={handleEnterTextMode}
+        onCancelTextMode={handleCancel}
       />
 
       {/* Global toast */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from './hooks/useApp';
 import { TabLayout } from './components/TabLayout';
 
